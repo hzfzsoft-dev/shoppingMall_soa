@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/shoppingmall-config/shoppingmall-config.iml" filepath="$PROJECT_DIR$/shoppingmall-config/shoppingmall-config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shoppingmall-model/shoppingmall-model.iml" filepath="$PROJECT_DIR$/shoppingmall-model/shoppingmall-model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shoppingmall-parent.iml" filepath="$PROJECT_DIR$/shoppingmall-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shoppingmall-service/shoppingmall-service.iml" filepath="$PROJECT_DIR$/shoppingmall-service/shoppingmall-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shoppingmall-user/shoppingmall-user.iml" filepath="$PROJECT_DIR$/shoppingmall-user/shoppingmall-user.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shoppingmall-util/shoppingmall-util.iml" filepath="$PROJECT_DIR$/shoppingmall-util/shoppingmall-util.iml" />
+    </modules>
+  </component>
+</project>
