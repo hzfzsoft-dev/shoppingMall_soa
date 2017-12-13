@@ -1,8 +1,8 @@
 ## config 主要是写一些说明. 配置之类的
 
 ## sql 写系统所有的初始化的sql 
--   leyu-*.sql 这个写的是见表的sql 或者 一些修改表的sql 需要注意,如果功能没有上线,那么修改原来的建表sql , 如果上线了,就写入修改的sql
--   leyu-*-data.sql 这个写入一下修复数据的sql ,或者需要插入的数据的sql
+-   shoppingMall-*.sql 这个写的是见表的sql 或者 一些修改表的sql 需要注意,如果功能没有上线,那么修改原来的建表sql , 如果上线了,就写入修改的sql
+-   shoppingMall-*-data.sql 这个写入一下修复数据的sql ,或者需要插入的数据的sql
 
 
 ## pom 文件夹 主要写一些用于方便编译写的pom文件
