@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/data/mongo
+      http://www.springframework.org/schema/data/mongo/spring-mongo.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <bean id="StatTimedTask" class="org.songbai.mutual.stat.scheduled.StatTimedTask" />
+
+                    
+    <task:scheduled-tasks>                                       
+        <task:scheduled ref="StatTimedTask" method="excute" cron="0 10 00 ? * *"/>
+    </task:scheduled-tasks>
+
+    
+    <bean id="UserStatTimedTask" class="org.songbai.mutual.stat.scheduled.UserStatTimedTask" />
+
+
+    <task:scheduled-tasks>
+        <task:scheduled ref="UserStatTimedTask" method="userCount" cron="0 02 00 ? * * "/>
+    </task:scheduled-tasks>
+    
+    <task:scheduled-tasks>
+        <task:scheduled ref="UserStatTimedTask" method="memberCount" cron="0 01 00 ? * * "/>
+    </task:scheduled-tasks>
+    
+    
+    
+    
+</beans>

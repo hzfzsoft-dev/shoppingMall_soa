@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.admin.dao.AdminSecurityResourceDao">
+
+
+	<!-- *********************菜单资源权限 ******************* -->
+	<!--条件查询正序排列  -->
+	<select id="findMenuResources" resultType="AdminMenuResourceModel">
+		select id, name, description, category, menu_icon, level, position,
+		url,parent_id,is_leaf,is_admin
+		from
+		dream_a_security_resource
+		where
+		status = 1
+		<if test="level != null">
+			and level = #{level}
+		</if>
+		<if test="category != null">
+			and category = #{category}
+		</if>
+		<if test="name != null">
+			and name = #{name}
+		</if>
+		<if test="description != null">
+			and description = #{description}
+		</if>
+		<if test="parentId !=null">
+			and parent_id =#{parentId}
+		</if>
+		order by position asc
+	</select>
+
+	<select id="getChildMenu" resultType="AdminMenuResourceModel">
+		select s.id, s.name,
+		s.description, s.category, s.menu_icon, s.level,
+		s.position, s.url ,s.is_admin
+		from
+		dream_a_security_resource s
+		<where>
+			<if test="parentId !=null"> AND s.parent_id =#{parentId}</if>
+			<if test="status !=null"> AND s.status =#{status}</if>
+			<if test="category !=null"> AND s.category =#{category}</if>
+		</where>
+		order by position asc
+	</select>
+
+
+	<select id="findMenuResourcesByRoleId" resultType="AdminMenuResourceModel">
+		select s.id, s.name, s.description, s.category, s.create_time, s.url,
+		s.menu_icon,s.position, s.level,s.parent_id ,s.is_admin
+		from
+		dream_a_security_resource s
+		INNER
+		JOIN
+		dream_a_security_resource_assignmen a
+		ON s.id =
+		a.security_resource_id
+		<where>
+			<if test="category != null">
+				and s.category = #{category}
+			</if>
+			<if test="level != null">
+				and s.level = #{level}
+			</if>
+			<if test="roleId != null">
+				and a.authority_id = #{roleId}
+			</if>
+			<if test="status !=null">
+				and status = #{status}
+			</if>
+			order by position asc
+		</where>
+	</select>
+
+
+	<select id="queryMenuResourcesByParentIdRoleId" resultType="AdminMenuResourceModel">
+		select s.id, s.name, s.description, s.category, s.create_time, s.url,
+		s.menu_icon,s.position, s.level,s.parent_id,s.is_leaf,s.is_admin
+		from
+		dream_a_security_resource s
+		INNER
+		JOIN
+		dream_a_security_resource_assignmen a
+		ON s.id = a.security_resource_id
+		<where>
+			<if test="parentId != null">
+				and s.parent_id = #{parentId}
+			</if>
+			<if test="roleId != null">
+				and a.authority_id = #{roleId}
+			</if>
+			<if test="status !=null">
+				and status = #{status}
+			</if>
+			<if test="category != null">
+				and category = #{category}
+			</if>
+		</where>
+		order by position asc
+	</select>
+
+	<select id="getAllByMenuId" resultType="AdminSecurityResourceModel">
+		select * from
+		dream_a_security_resource
+		where status = 1
+		<if test="menuId != null"> and parent_id = #{menuId}</if>
+		<if test="category != null"> and category = #{category}</if>
+	</select>
+	<!-- ********************URL访问权限资源**************** -->
+	
+	
+	<select id="getSecurityResourcesByActorId" resultType="AdminSecurityResourceModel">
+		select s.id, s.name, s.description, s.category, s.create_time,
+		s.url,s.level
+		from dream_a_security_resource s
+		INNER JOIN
+		dream_a_security_resource_assignmen a
+		ON s.id = a.security_resource_id
+		INNER JOIN dream_a_authorization da
+		ON da.authority_id = a.authority_id
+		<where>
+			<if test="actorId != null">
+				and da.actor_id = #{actorId}
+			</if>
+			<if test="category != null">
+				and s.category = #{category}
+			</if>
+		</where>
+	</select>
+
+
+	<!-- ********************页面元素资源权限资源**************** -->
+
+	<select id="getPageElementByActorId" resultType="String">
+		select distinct
+		s.identifier
+		from dream_a_security_resource s
+		INNER JOIN
+		dream_a_security_resource_assignmen a
+		ON s.id = a.security_resource_id
+		INNER JOIN dream_a_authorization da
+		ON da.authority_id = a.authority_id
+		where da.actor_id = #{actorId}
+		and s.category = #{category}
+	</select>
+	
+	<select id="getPageElementAll" resultType="String">
+		select s.identifier
+		from
+		dream_a_security_resource s
+		where s.category = #{category}
+		and s.status = 1
+	</select>
+	
+	<insert id="createMenu" parameterType="AdminMenuResourceModel" useGeneratedKeys="true" keyProperty="id">
+		insert into dream_a_security_resource(name,description,category,level,position,url,parent_id)
+			values(#{name},#{description},#{category},#{level},#{position},#{url},#{parentId})
+	</insert>
+	
+	<select id="getMenu" resultType="AdminMenuResourceModel">
+		select id, name, description,
+		category, menu_icon, level, position,
+		url,parent_id,is_leaf,is_admin
+		from
+		dream_a_security_resource
+		<where>
+			<if test="id !=null"> AND id =#{id}</if>
+			<if test="status !=null"> AND status =#{status}</if>
+			<if test="category !=null"> AND category =#{category}</if>
+		</where>
+	</select>
+	<update id="updateMenu" parameterType="AdminMenuResourceModel">
+		update dream_a_security_resource
+		<set>
+			<if test="name != null">name = #{name},</if>
+			<if test="description != null">description = #{description},</if>
+			<if test="position != null">position = #{position},</if>
+			<if test="category != null">category = #{category},</if>
+			<if test="url != null">url = #{url},</if>
+			<if test="isLeaf != null">is_leaf = #{isLeaf},</if>
+			<if test="parentId != null">parent_id = #{parentId},</if>
+			<if test="menuIcon != null">menu_icon = #{menuIcon},</if>
+		</set>
+		where id = #{id}
+	</update>
+	<update id="updateStatus">
+		update dream_a_security_resource set status=0 where id=#{id}
+	</update>
+	
+	<select id="pagingQueryPageElement" resultType="AdminPageElementResourceModel">
+		select sr.id, name, sr.description, sr.category,sr.create_time,sr.url,
+		sr.identifier,sr.parent_id,sr.is_leaf,sr.is_admin,(SELECT
+		name from dream_a_security_resource where id = sr.parent_id) as parent_name
+		from dream_a_security_resource sr
+		<where>
+			status = 1
+			<if test="parentId!=null">
+				and sr.parent_id=#{parentId}
+			</if>
+			<if test="category != null">
+				and category = #{category}
+			</if>
+		</where>
+			order by parent_id
+			limit #{limit}, #{pageSize}
+	</select>
+	
+	
+	<insert id="addPageElement" parameterType="AdminPageElementResourceModel" useGeneratedKeys="true" keyProperty="id">
+		insert into dream_a_security_resource(id,name,description,category,url,identifier,parent_id)
+			values(#{id},#{name},#{description},#{category},#{url},#{identifier},#{parentId})
+	
+	</insert>
+	
+	<select id="findPageElementByIdentifier" resultType="AdminPageElementResourceModel">
+		select id,name,description,category,url,identifier,parent_id from dream_a_security_resource 
+		<where>
+			<if test="identifier!=null">
+				identifier=#{identifier}
+			</if>
+		</where>
+	</select>
+	<update id="updatePageElement">
+		update dream_a_security_resource
+		<set>
+			<if test="name != null">name = #{name},</if>
+			<if test="description != null">description = #{description},</if>
+			<if test="identifier!=null">identifier=#{identifier},</if>
+			<if test="category != null">category = #{category},</if>
+			<if test="url != null">url = #{url},</if>
+			<if test="parentId != null">parent_id = #{parentId},</if>
+		</set>
+		where id = #{id}
+	
+	</update>
+	<select id="getAllLeafMenu" resultType="AdminMenuResourceModel">
+		select s.id,
+		s.name,
+		s.description, s.category, s.menu_icon,
+		s.level,s.is_leaf,
+		s.position,
+		s.url
+		from
+		dream_a_security_resource s
+		where s.level = 1
+		and s.status = 1
+		<if test="category !=null"> AND s.category =#{category}</if>
+	</select>
+	
+	<select id="pagingQueryPageElement_count" parameterType="java.util.HashMap"
+		resultType="Integer">
+		select count(id)
+		from dream_a_security_resource
+		where status = 1
+		<if test="name != null">
+			and name like #{name}
+		</if>
+		<if test="description != null">
+			and description = #{description}
+		</if>
+		<if test="category != null">
+			and category = #{category}
+		</if>
+		<if test="identifier != null">
+			and identifier = #{identifier}
+		</if>
+		<if test="parentId !=null">
+			and parent_id = #{parentId}
+		</if>
+	</select>
+</mapper>

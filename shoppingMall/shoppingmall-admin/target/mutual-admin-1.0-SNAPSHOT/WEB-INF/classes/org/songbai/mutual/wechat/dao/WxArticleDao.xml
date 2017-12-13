@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.wechat.dao.WxArticleDao">
+		
+	<select id="wxArticleList" resultType="WxArticleModel">
+		select * from ly_wx_article where deleted =0
+		order by id  limit #{limit}, #{pageSize}
+	</select>
+	
+	<select id="wxArticleBy_count" resultType="Integer" parameterType="WxArticleModel">
+		select count(id) from ly_wx_article where deleted =0
+	</select>
+
+	<select id="findById" parameterType="WxArticleModel" resultType="Integer">
+		select * from ly_wx_article where deleted =0 and id = #{id}
+	</select>
+
+	<insert id="save" parameterType="WxArticleModel">
+		insert into ly_wx_article (
+		<trim suffixOverrides=",">
+			<if test=" id != null">id,</if>
+			<if test=" type != null">type,</if>
+			<if test=" title != null">title,</if>
+			<if test=" description != null">description,</if>
+			<if test=" pic_url != null">pic_url,</if>
+			<if test=" url != null">url,</if>
+			<if test=" sort != null">sort,</if>
+			<if test=" create_time != null">create_time,</if>
+		</trim>
+		)
+		values (
+		<trim suffixOverrides=",">
+			<if test=" id != null">#{id},</if>
+			<if test=" type != null">#{type},</if>
+			<if test=" title != null">#{title},</if>
+			<if test=" description != null">#{description},</if>
+			<if test=" pic_url != null">#{pic_url},</if>
+			<if test=" url != null">#{url},</if>
+			<if test=" sort != null">#{sort},</if>
+			<if test=" create_time != null">#{create_time},</if>
+		</trim>
+		)
+	</insert>
+
+
+	<update id="updateWxArticle"  parameterType="WxArticleModel">
+		update ly_wx_article
+		<set>
+			<if test=" id != null">#{id},</if>
+			<if test=" type != null">#{type},</if>
+			<if test=" title != null">#{title},</if>
+			<if test=" description != null">#{description},</if>
+			<if test=" pic_url != null">#{pic_url},</if>
+			<if test=" url != null">#{url},</if>
+			<if test=" sort != null">#{sort},</if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<update id="deleteWxArticle" parameterType="integer">
+		update ly_wx_article set deleted =1 where id =#{id}
+	</update>
+	
+
+</mapper>

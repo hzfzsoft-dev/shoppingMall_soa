@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.wechat.dao.NewsTemplateDao">
+		
+	<select id="pagingQuery" resultType="LeYuTemplateModel">
+		select * from ly_a_wx_templat 
+		<where>
+				deleted =0
+			<if test="model.status !=null"> and status = #{model.status}</if>
+			<if test="model.type !=null"> and type = #{model.type}</if>
+			<if test="model.templateId != null"> and template_id = #{model.templateId}</if>
+		</where>
+		order by update_time desc limit #{limit}, #{pageSize} 
+	</select>
+	
+	<select id="pagingQueryBy_count" resultType="Integer" parameterType="LeYuTemplateModel">
+		select count(id) from ly_a_wx_templat 
+		<where>
+				deleted =0
+			<if test="status !=null">and  status = #{status}</if>
+			<if test="type !=null">and type = #{type}</if>
+			<if test="templateId != null"> and template_id = #{templateId}</if>
+		</where>
+	</select>
+	
+	<insert id="save" parameterType="LeYuTemplateModel">
+		insert into ly_a_wx_templat 
+			(template_id, templat_name, templat_content, status, jump_url, type)
+		values
+			(#{templateId}, #{templatName}, #{templatContent}, #{status}, #{jumpUrl}, #{type})	
+	</insert>
+	<update id="update" parameterType="LeYuTemplateModel">
+		update ly_a_wx_templat
+		<set>
+			<if test="templateId !=null">template_id = #{templateId}, </if>
+			<if test="templatName !=null">templat_name = #{templatName}, </if>
+			<if test="templatContent !=null">templat_content =#{templatContent}, </if>
+			<if test="status !=null">status = #{status}, </if>
+			<if test="jumpUrl !=null"> jump_url= #{jumpUrl},</if>
+			<if test="type !=null"> type = #{type}</if>
+		</set>
+		where id = #{id}
+	</update>	
+	
+	<select id="checkNewTemplate" parameterType="LeYuTemplateModel" resultType="LeYuTemplateModel">
+		select * from ly_a_wx_templat
+		<where>
+			status =1
+			and deleted =0
+			<if test="templateId !=null and templateId !=''">and template_id = #{templateId}</if>
+			<if test="type !=null and type !=''">and  type = #{type}</if>
+		
+		</where>
+	</select>
+	
+	<update id="delete" parameterType="integer">
+		update ly_a_wx_templat set deleted =1 where id =#{id}
+	</update>
+	
+
+</mapper>

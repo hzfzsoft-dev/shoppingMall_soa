@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.product.dao.MutualProductAccountDao">
+
+     <insert id="addMutualProductAccount" parameterType="MutualProductAccountModel" useGeneratedKeys="true" keyProperty="id">
+		    insert into ly_p_mutual_product_account (product_code,create_time,modify_time) values(#{productCode},now(),now())
+	 </insert>
+	
+	<select id="queryMutualProductAccount" resultType="MutualProductAccountVO" >
+	        select t1.*,t2.product_name from ly_p_mutual_product_account t1 inner join ly_p_mutual_product t2 on t1.product_code=t2.product_code where t2.status=1 order by t1.create_time desc  
+	</select>
+	
+	<update id="updateProductCodeByCode">
+	       update ly_p_mutual_product_account set product_code=#{productCode} where product_code=#{code}
+	</update>
+	
+	
+</mapper>

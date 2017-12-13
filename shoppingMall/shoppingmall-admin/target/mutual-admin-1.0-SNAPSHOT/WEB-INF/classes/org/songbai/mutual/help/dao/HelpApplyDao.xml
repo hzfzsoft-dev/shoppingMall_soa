@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.help.dao.HelpApplyDao">
+	
+      <select id="queryApplyList" resultType="HelpApplyVO">
+		  SELECT t.id,t.apply_code,t.policy_code,t.product_code,t.status,t.remark,t2.real_name as poliyUserName,t3.product_name AS productName FROM ly_h_help_apply t
+		  INNER JOIN ly_u_user_policy t2 on t.policy_code=t2.policy_code
+		  INNER JOIN ly_p_mutual_product t3 on t.product_code = t3.product_code
+		  order by t.create_time desc
+		  limit #{limit},#{pageSize}
+	  </select>
+
+	<select id="queryApplyListCount" resultType="integer">
+		SELECT count(0) FROM ly_h_help_apply
+	</select>
+
+	<select id="loadApplyByApplyCode" resultType="HelpApplyVO">
+		SELECT t.*,t2.real_name as poliyUserName,t2.join_time as joinTime , t2.job_time as jobTime,t2.member_id as memberId , t3.product_name AS productName,t4.user_name as userName FROM ly_h_help_apply t
+		INNER JOIN ly_u_user_policy t2 on t.policy_code=t2.policy_code
+		INNER JOIN ly_p_mutual_product t3 on t.product_code = t3.product_code
+		INNER JOIN ly_u_user t4 ON  t.user_id=t4.id
+		where t.apply_code = #{applyCode}
+		limit 1
+	</select>
+
+	<update id="updateRemarkByApplyCode">
+		update ly_h_help_apply set remark=#{remark} where apply_code=#{applyCode}
+	</update>
+
+	<update id="updateHelpApply" parameterType="HelpApplyModel">
+		update ly_h_help_apply SET
+		<if test="phone !=null "> phone = #{phone},</if>
+		<if test="policyPhone !=null "> policy_phone = #{policyPhone},</if>
+		<if test="cardHolder != null "> card_holder = #{cardHolder}, </if>
+		<if test="bankName != null "> bank_name = #{bankName}, </if>
+		<if test="cardNumber !=null "> card_number = #{cardNumber}, </if>
+		<if test="accountBank !=null "> account_bank = #{accountBank}, </if>
+		<if test=" applyDescribe !=null " >apply_describe = #{applyDescribe}, </if>
+		<if test="remark !=null "> remark = #{remark},</if>
+		modify_time = now()
+		WHERE apply_code = #{applyCode}
+	</update>
+
+	<select id="queryHasApplyByPolicyCodeCount" resultType="integer">
+		select count(0) from ly_h_help_apply where policy_code=#{policyCode} and status !=0
+	</select>
+
+	<insert id="insertHelpApply" parameterType="HelpApplyModel" useGeneratedKeys="true" keyProperty="id">
+		insert into ly_h_help_apply (
+		apply_code,
+		product_code,
+		policy_code,
+		user_id,
+		phone,
+		policy_phone,
+		join_age,
+		join_day_age ,
+		card_holder,
+		bank_name,
+		card_number,
+		account_bank,
+		apply_describe,
+		remark,
+		create_type,
+		actor_id,
+		create_time,
+		modify_time)
+		VALUES (
+		#{applyCode},
+		#{productCode},
+		#{policyCode},
+		#{userId},
+		#{phone},
+		#{policyPhone},
+		#{joinAge},
+		#{joinDayAge},
+		#{cardHolder},
+		#{bankName},
+		#{cardNumber},
+		#{accountBank},
+		#{applyDescribe},
+		#{remark},
+		#{createType},
+		#{actorId},
+		now(),
+		now())
+	</insert>
+
+</mapper>

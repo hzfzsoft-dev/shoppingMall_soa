@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/data/mongo
+      http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
+       ">
+
+
+    <!-- spring data redis -->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal" value="20"/>
+        <property name="maxIdle" value="10"/>
+        <property name="minIdle" value="5"/>
+    </bean>
+
+    <bean id="redisConnectionFactory"
+          class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:hostName="${sys.redis.hostName}" p:port="${sys.redis.port}"
+          p:usePool="${sys.redis.usePool}" p:database="${sys.redis.database}"
+          p:poolConfig-ref="jedisPoolConfig" p:password="${sys.redis.pass}"/>
+
+    <bean id="fastJsonSerializer" class="org.fzsoft.shoppingmall.utils.cache.RedisJsonSerializer"/>
+    <bean id="stringSerializer"
+          class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+
+    <!-- redis template definition -->
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+          p:connectionFactory-ref="redisConnectionFactory"
+          p:defaultSerializer-ref="fastJsonSerializer" p:keySerializer-ref="stringSerializer"/>
+
+</beans>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.fish.dao.FishTalkDao">
+	
+	<select id="queryPageTalk" resultType="FishTalkModel">
+	   select * from ly_f_fish_talk 
+	   <where>
+	     <if test="timeType!=null">
+	        and time_type = #{timeType}
+	     </if>
+		 <if test="contentType != null ">
+		    and content_type= #{contentType}
+	     </if>
+	   </where>
+	   order by create_time desc 
+	   limit #{limit},#{pageSize}
+	</select>
+	
+	<select id="queryPageTalkCount" resultType="integer">
+	   select count(0) from ly_f_fish_talk 
+	   <where>
+	     <if test="timeType!=null">
+	        and time_type = #{timeType}
+	     </if>
+		 <if test="contentType != null ">
+		    and content_type= #{contentType}
+	     </if>
+	   </where>
+	</select>
+	
+	<select id="queryTalkById" resultType="FishTalkModel">
+	   select * from ly_f_fish_talk where id=#{id}
+	</select>
+	<insert id="addFishTalk" parameterType="FishTalkModel" useGeneratedKeys="true" keyProperty="id">
+	   insert into ly_f_fish_talk (content,fish_types,content_type,time_type,start_time,end_time,create_time,modify_time) values (#{content},#{fishTypes},#{contentType},#{timeType},#{startTime},#{endTime},now(),now())
+	</insert>
+	
+	<update id="updateFishTalk" parameterType="FishTalkModel">
+	   update ly_f_fish_talk set content=#{content},fish_types=#{fishTypes}, content_type= #{contentType},time_type=#{timeType}, start_time=#{startTime},end_time=#{endTime},modify_time=now() where id=#{id}
+	</update>
+	
+	<delete id="deleteByIds">
+	   delete from ly_f_fish_talk where id in
+	    <foreach collection="talkIds" item="talkId" index="index" open="(" separator="," close=")">
+					#{talkId}
+		</foreach>
+	</delete>
+	
+	 <select id="queryByStatus" resultType="FishTalkModel">
+	    	select * from ly_f_fish_talk where content_type=#{status}
+	  </select>
+	
+</mapper>

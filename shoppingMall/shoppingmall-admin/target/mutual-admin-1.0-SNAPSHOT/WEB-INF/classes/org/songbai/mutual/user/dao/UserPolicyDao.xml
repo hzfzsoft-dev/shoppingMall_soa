@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.user.dao.UserPolicyDao">
+
+    <update id="updateUserPolicyStatus">
+    		update ly_u_user_policy set status=#{status},unjob_time=now(),deleted=0 where member_id=#{memberId} and policy_code =#{policyCode}
+    </update>
+	
+	<select id="queryByJobTime" resultType="UserPolicyModel">
+		select distinct t1.id,t1.job_time,t1.status from ly_u_user_policy t1 left join ly_p_mutual_product t2 on t1.product_code=t2.product_code  where t1.status=3 and t2.product_type=1 and t2.status=1 and job_time &gt;= now()    
+	</select>    
+	
+	<update id="updateUserPolicyStatusById" >
+		    update ly_u_user_policy set status=#{status} where id=#{id}
+	</update>
+	<select id="queryPaidPolicyByProductCode" resultType="UserPolicyVO">
+		select policy.*,account.rest_money from ly_u_user_policy policy left
+		join ly_u_user_policy_account account
+		on
+		policy.policy_code=account.policy_code
+		where policy.status!=2
+		<if test="policy.productCode!=null">and policy.product_code =#{policy.productCode}</if>
+		<if test="policy.realName!=null">and real_name like CONCAT('%',#{policy.realName},'%' )
+		</if>
+		<if test="policy.identityCard!=null">and identity_card  like CONCAT('%',#{policy.identityCard},'%' )</if>
+		<if test="joinTimeFrom!=null">and join_time &gt;=#{joinTimeFrom}</if>
+		<if test="joinTimeTo!=null">and join_time &lt;=#{joinTimeTo}</if>
+		<if test="policy.status!=null">and policy.status=#{policy.status}</if>
+		order by join_time DESC
+		limit #{limit},#{pageSize}
+	</select>
+
+
+
+	<select id="countPaidPolicyByProductCode" resultType="integer">
+		select count(*) from ly_u_user_policy policy left join
+		ly_u_user_policy_account account
+		on
+		policy.policy_code=account.policy_code
+		where policy.status!=2
+		<if test="policy.productCode!=null">and policy.product_code =#{policy.productCode}</if>
+		<if test="policy.realName!=null">and real_name like CONCAT('%',#{policy.realName},'%' )</if>
+		<if test="policy.identityCard!=null">and identity_card like CONCAT('%',#{policy.identityCard},'%' )</if>
+		<if test="joinTimeFrom!=null">and join_time &gt;=#{joinTimeFrom}</if>
+		<if test="joinTimeTo!=null">and join_time &lt;=#{joinTimeTo}</if>
+		<if test="policy.status!=null">and status=#{policy.status}</if>
+		order by join_time DESC
+	</select> 
+	
+	
+	<select id="queryUserRelationPolicy" resultType="UserPolicyVO">
+		(select policy.*,account.rest_money,relation.relation from ly_u_user_policy policy 
+		left join ly_u_user_policy_account account on account.policy_code=policy.policy_code 
+		left join ly_u_relation relation on relation.identity_card=policy.identity_card and relation.user_id=policy.user_id
+		where policy.user_id =#{userId} and policy.status!=#{status} ) 
+		UNION  
+		(select p.*,a.rest_money,pr.relation from  ly_u_user_policy_relation pr
+		left join ly_u_user_policy p on pr.policy_code=p.policy_code
+		left join ly_u_user_policy_account a on a.policy_code=p.policy_code 
+		where pr.user_id=#{userId} and p.status!=#{status} ) 
+		ORDER BY join_time DESC
+		limit #{limit},#{pageSize}
+	</select>
+	
+	<select id="countUserBuyPolicy" resultType="integer">
+		select count(*) from ly_u_user_policy policy 
+		left join ly_u_user_policy_account account on account.policy_code=policy.policy_code 
+		left join ly_u_relation relation  on relation.identity_card=policy.identity_card and relation.user_id=policy.user_id
+		where policy.user_id =#{userId} 
+	</select>
+	<select id="countUserRelationPolicy" resultType="integer">
+		SELECT count(*) from ((select policy.*,account.rest_money,relation.relation from ly_u_user_policy policy 
+		left join ly_u_user_policy_account account on account.policy_code=policy.policy_code 
+		left join ly_u_relation relation on relation.identity_card=policy.identity_card and relation.user_id=policy.user_id
+		where policy.user_id =#{userId} and policy.status!=#{status})
+		UNION  
+		(select p.*,a.rest_money,pr.relation from  ly_u_user_policy_relation pr
+		left join ly_u_user_policy p on pr.policy_code=p.policy_code
+		left join ly_u_user_policy_account a on a.policy_code=p.policy_code 
+		where pr.user_id=#{userId} and p.status!=#{status}) 
+		ORDER BY join_time DESC)a
+
+	</select>
+	<select id="countPolicyByStatusAndProduct" resultType="integer">
+		select count(*) from ly_u_user_policy where deleted =0 and 
+			status in 
+		<foreach collection="status" index="index" item="item" open="(" separator="," close=")">
+               		#{item}       
+      	</foreach>  
+      	and product_code=#{productCode}
+	</select>
+	<select id="queryPolicyFlowByCode" resultType="UserPolicyFlowModel">
+		select * from ly_u_user_policy_flow where policy_code =#{policyCode}
+		ORDER BY create_time DESC ,id DESC
+		LIMIT #{limit},#{pageSize}
+	</select>
+	<select id="countPolicyFlowByCode" resultType="integer">
+		select Count(*) from ly_u_user_policy_flow where policy_code =#{policyCode}
+	</select>
+
+	<select id="findPolicyByPolicyCode" resultType="UserPolicyModel">
+		SELECT * FROM  ly_u_user_policy where policy_code=#{policyCode}
+	</select>
+	<select id="updateUserPolicyStatusAndDeleted">
+		update ly_u_user_policy set deleted= 1,status=#{status} where policy_code=#{policyCode} and member_id=#{memberId}
+	</select>
+
+	<select id="loadUserPolicyByPolicyCodeAndStatus" resultType="UserPolicyModel">
+		select * from ly_u_user_policy where policy_code =#{policyCode} and status=#{status} limit 1
+	</select>
+
+	<select id="loadUserPolicyByIdCardAndStatus" resultType="UserPolicyModel">
+		select * from ly_u_user_policy where member_id=#{memberId} and identity_card =#{identityCard} and product_code=#{productCode} and status =#{status} limit 1
+	</select>
+
+	<select id="queryHasCountByCodeAndUser" resultType="integer">
+		select count(1) from (select id from  ly_u_user_policy  where policy_code =#{policyCode} and user_id =#{userId} and status=1 and deleted=0
+		union
+		select p.id from ly_u_user_policy p left join ly_u_user_policy_relation r on p.policy_code=r.policy_code
+		where r.user_id =#{userId} and r.policy_code=#{policyCode} and p.status=1 and p.deleted=0) t
+	</select>
+</mapper>

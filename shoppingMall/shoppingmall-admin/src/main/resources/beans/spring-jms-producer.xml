@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+
+	 
+	    
+	<!-- 短信渠道信息发生改变消息生成 -->
+    <bean id="senderMessageChangendSender" class="JmsSender">
+        <property name="jmsTemplate" ref="jmsTemplate"/>
+        <property name="dest">
+            <bean class="org.apache.activemq.command.ActiveMQTopic">
+                <property name="physicalName" value="admin.sms.changeSenderMsg"/>
+            </bean>
+        </property>
+    </bean>
+    <!--推送的MQ-->
+    <bean id="jmsSenderForPush" class="JmsSender">
+        <property name="jmsTemplate" ref="jmsTemplate"/>
+        <property name="dest">
+            <bean class="org.apache.activemq.command.ActiveMQTopic">
+                <property name="physicalName" value="all.sms.sendPush"/>
+            </bean>
+        </property>
+    </bean>
+    <!-- 案例微信模板推送 -->
+    <bean id="wxCasePublicitySender" class="JmsSender">
+        <property name="jmsTemplate" ref="jmsTemplate"/>
+        <property name="dest">
+            <bean class="org.apache.activemq.command.ActiveMQQueue">
+                <property name="physicalName" value="wx.message.sendCasePublicityTemplate"/>
+            </bean>
+        </property>
+    </bean>
+    <!-- 扣款的MQ -->
+    <bean id="helpDebitSender" class="JmsSender">
+        <property name="jmsTemplate" ref="jmsTemplate"/>
+        <property name="dest">
+            <bean class="org.apache.activemq.command.ActiveMQQueue">
+                <property name="physicalName" value="user.sms.helpDebit"/>
+            </bean>
+        </property>
+    </bean>
+</beans>

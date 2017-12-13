@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.finance.dao.FinancePayRuleDao">
+	<select id="queryPagingPayRule" resultType="org.songbai.mutual.finance.vo.PayRuleVO">
+		select pay.*,bank.name as bank_name from ly_u_finance_channel_pay pay left join ly_u_finance_bank bank on bank.id=pay.bank_id 
+		<where>
+			<if test="status!=null">
+				pay.status=#{status}
+			</if>
+			<if test="bankId!=null">
+				bank.id=#{bankId}
+			</if>
+		</where> 
+		limit #{limit},#{pageSize}
+	</select>
+	
+	<select id="queryPagingPayRuleCount" resultType="integer">
+		select count(*) from ly_u_finance_channel_pay pay left join ly_u_finance_bank bank on bank.id=pay.bank_id 
+		<where>
+			<if test="status!=null">
+				pay.status=#{status}
+			</if>
+			<if test="bankId!=null">
+				bank.id=#{bankId}
+			</if>
+		</where> 
+	</select>
+	
+	<insert id="addPayRule" parameterType="FinancePayRuleModel" useGeneratedKeys="true" keyProperty="id">
+		insert into ly_u_finance_channel_pay (
+			<trim suffixOverrides=",">
+				<if test="bankId != null">bank_id,</if>
+				<if test="limitSingle != null">limit_single,</if>
+				<if test="limitDay != null">limit_day,</if>
+				<if test="status != null">status,</if>
+			</trim>
+		) values (
+			<trim suffixOverrides=",">
+				<if test="bankId != null">#{bankId},</if>
+				<if test="limitSingle != null">#{limitSingle},</if>
+				<if test="limitDay != null">#{limitDay},</if>
+				<if test="status != null">#{status},</if>
+			</trim>
+		)
+	</insert>
+	
+	<select id="find" parameterType="FinancePayRuleModel" resultType="FinancePayRuleModel">
+		select * from ly_u_finance_channel_pay
+		<where>
+			<if test="id != null">and id != #{id}</if>
+			<if test="bankId != null">and bank_id = #{bankId}</if>
+			<if test="limitSingle != null">and limit_single = #{limitSingle}</if>
+			<if test="limitDay != null">and limit_day = #{limitDay}</if>
+			<if test="status != null">and status = #{status}</if>
+		</where>
+		limit 1
+	</select>
+	
+	<select id="findByBankIdAndRule" parameterType="FinancePayRuleModel" resultType="FinancePayRuleModel">
+		select * from ly_u_finance_channel_pay
+		<where>
+			status = 1
+			<if test="bankId != null">and bank_id = #{bankId}</if>
+		</where>
+	</select>
+	
+	<update id="updatePayRule" parameterType="FinancePayRuleModel">
+		update ly_u_finance_channel_pay
+		<set>
+			<if test="bankId != null">bank_id = #{bankId},</if>
+			<if test="limitSingle != null">limit_single = #{limitSingle},</if>
+			<if test="limitDay != null">limit_day = #{limitDay},</if>
+			<if test="status != null">status = #{status},</if>
+			<if test="updateTime != null">update_time = #{updateTime},</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	
+</mapper>

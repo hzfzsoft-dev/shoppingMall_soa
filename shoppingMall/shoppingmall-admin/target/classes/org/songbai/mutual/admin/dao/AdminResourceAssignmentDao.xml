@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.admin.dao.AdminResourceAssignmentDao">
+	<select id="getByRoleIdAthourIdResourceId" resultType="AdminResourceAssignmentModel">
+		select a.id from dream_a_security_resource_assignmen a
+		<where>
+			<if test="roleId != null">AND a.authority_id = #{roleId}</if>
+			<if test="resourceId != null">AND a.security_resource_id = #{resourceId}</if>
+		</where>
+	</select>
+	<delete id="deleteAdminResourceAssignmentsByAuthorityId" >
+		delete from dream_a_security_resource_assignmen where authority_id=#{roleId}
+	</delete>
+	<select id="getAdminResourceAssignmentIdsByRoleId" resultType="integer">
+		select a.id from dream_a_security_resource_assignmen a
+		<where>
+			<if test="roleId != null">AND a.authority_id = #{roleId}</if>
+		</where>
+	
+	</select>
+	<insert id="creatAdminResourceAssignment" parameterType="AdminResourceAssignmentModel" useGeneratedKeys="true" keyProperty="id">
+		insert into dream_a_security_resource_assignmen 
+		(security_resource_id, authority_id) 
+		values 
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.securityResourceId}, #{item.authorityId})
+		</foreach>
+	</insert>
+	<delete id="deleteAdminResourceAssignment">
+		delete from dream_a_security_resource_assignmen
+		<where>
+			<if test="authorityId != null">AND authority_id = #{authorityId}</if>
+			<if test="securityResourceId != null">AND security_resource_id = #{securityResourceId}</if>
+		</where>
+	</delete>
+</mapper>

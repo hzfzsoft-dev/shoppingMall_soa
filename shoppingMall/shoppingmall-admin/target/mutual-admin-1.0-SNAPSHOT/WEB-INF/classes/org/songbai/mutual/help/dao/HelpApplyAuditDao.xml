@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.help.dao.HelpApplyAuditDao">
+	
+
+	<insert id="insertHelpApplyAudit" parameterType="HelpApplyAuditModel">
+		INSERT INTO ly_h_help_apply_audit (
+			apply_code,
+			audit_type,
+			`status`,
+			opinion,
+			remark,
+			create_time
+		)
+		VALUES
+			(
+			#{applyCode},
+			#{auditType},
+			#{status},
+			#{opinion},
+			#{remark},
+			#{createTime}
+			)
+	</insert>
+
+	<update id="updateApplyStatus">
+		update ly_h_help_apply set status = #{status} where apply_code = #{applyCode}
+	</update>
+
+	<select id="queryAuditByCodeAndType" resultType="HelpApplyAuditModel">
+		SELECT * FROM ly_h_help_apply_audit  where  apply_code = #{applyCode} and audit_type  = #{type} limit 1
+	</select>
+
+	<select id="queryNewAuditByCode" resultType="HelpApplyAuditModel">
+		SELECT * FROM ly_h_help_apply_audit  where  apply_code = #{applyCode} order by create_time desc limit 1
+	</select>
+</mapper>

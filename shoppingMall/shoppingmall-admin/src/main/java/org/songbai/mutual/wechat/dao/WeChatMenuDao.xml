@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.wechat.dao.WeChatMenuDao">
+		
+	<select id="pagingQuery" resultType="WechatMenuModel">
+		select * from ly_wx_wechat_menu where deleted =0
+		order by id  limit #{limit}, #{pageSize}
+	</select>
+	
+	<select id="pagingQueryBy_count" resultType="Integer" parameterType="WechatMenuModel">
+		select count(id) from ly_wx_wechat_menu where deleted =0
+	</select>
+
+	<select id="find" resultType="Integer" parameterType="WechatMenuModel">
+		select * from ly_wx_wechat_menu where deleted =0 and parent_id is null
+	</select>
+
+	<select id="findByParentId" resultType="Integer" parameterType="WechatMenuModel">
+		select id from ly_wx_wechat_menu where deleted =0 and  parent_id = #{id}
+	</select>
+
+	<select id="findById" resultType="Integer" parameterType="WechatMenuModel">
+		select id from ly_wx_wechat_menu where deleted =0 and id = #{id}
+
+	</select>
+
+
+	<insert id="save" parameterType="WechatMenuModel">
+		insert into ly_wx_wechat_menu (
+		<trim suffixOverrides=",">
+			<if test=" id != null">id,</if>
+			<if test=" name != null">name,</if>
+			<if test=" type != null">type,</if>
+			<if test=" key_click != null">key_click,</if>
+			<if test=" url != null">url,</if>
+			<if test=" createTime != null">create_time,</if>
+			<if test=" parentId != null">parent_id,</if>
+			<if test=" menuSort != null">menu_sort,</if>
+		</trim>
+		)
+		values (
+		<trim suffixOverrides=",">
+			<if test=" id != null">#{id},</if>
+			<if test=" name != null">#{name},</if>
+			<if test=" type != null">#{type},</if>
+			<if test=" key_click != null">#{key_click},</if>
+			<if test=" url != null">#{url},</if>
+			<if test=" createTime != null">#{createTime},</if>
+			<if test=" parentId != null">#{parentId},</if>
+			<if test=" menuSort != null">#{menuSort},</if>
+		</trim>
+		)
+	</insert>
+
+
+	<update id="updateWeChatMenu"  parameterType="WechatMenuModel">
+		update ly_wx_wechat_menu
+		<set>
+			<if test="id !=null">id = #{id}, </if>
+			<if test="name !=null">name = #{name}, </if>
+			<if test="type !=null">type =#{type}, </if>
+			<if test="key_click !=null">key_click = #{key_click}, </if>
+			<if test="url !=null">url = #{url}, </if>
+			<if test="parentId !=null"> parent_id= #{parentId},</if>
+			<if test="menuSort !=null"> menu_sort = #{menuSort}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<update id="deleteWeChatMenu" parameterType="integer">
+		update ly_wx_wechat_menu set deleted =1 where id =#{id}
+	</update>
+	
+
+</mapper>

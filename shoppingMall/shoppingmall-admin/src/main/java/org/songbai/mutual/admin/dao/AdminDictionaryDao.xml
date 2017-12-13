@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.admin.dao.AdminDictionaryDao">
+	<select id="findDictionaryByPage" resultType="AdminDictionaryModel">
+		select * from dream_a_dictionary
+		<where>
+			<if test="type != null">and type like CONCAT('%', #{type}, '%')</if>
+			<if test="status != null">and status = #{status}</if>
+		</where>
+	</select>
+	<select id="findDictionaryCount" resultType="Integer">
+		select count(id) from dream_a_dictionary
+		<where>
+			<if test="type != null">and type like CONCAT('%', #{type},'%')</if>
+			<if test="status != null">and status = #{status}</if>
+		</where>
+	</select>
+	<insert id="addDictionary" parameterType="AdminDictionaryModel"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into dream_a_dictionary
+		(
+			<trim suffixOverrides=",">
+				<if test="type != null">type,</if>
+				<if test="name != null">name,</if>
+				<if test="code != null">code,</if>
+				<if test="value != null">value,</if>
+				<if test="comments != null">comments,</if>
+				<if test="createUser != null">create_user,</if>
+				<if test="updateUser != null">update_user,</if>
+			</trim>
+		)
+		values(
+			<trim suffixOverrides=",">
+				<if test="type != null">#{type},</if>
+				<if test="name != null">#{name},</if>
+				<if test="code != null">#{code},</if>
+				<if test="value != null">#{value},</if>
+				<if test="comments != null">#{comments},</if>
+				<if test="createUser != null">#{createUser},</if>
+				<if test="updateUser != null">#{updateUser},</if>
+			</trim>
+		)
+		
+		
+	</insert>
+	<update id="updateDictionary">
+		update dream_a_dictionary
+		<set>
+			<if test="status!=null"> status=#{status},</if>
+			<if test="type!=null"> type=#{type},</if>
+			<if test="name!=null"> name=#{name},</if>
+			<if test="code!=null"> code=#{code},</if>
+			<if test="value!=null"> value=#{value},</if>
+			<if test="comments!=null"> comments=#{comments},</if>
+			<if test="updateUser!=null"> update_user=#{updateUser}</if>
+		</set>
+		where id =#{id}
+	</update>
+</mapper>

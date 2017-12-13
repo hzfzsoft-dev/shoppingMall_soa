@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.admin.dao.AdminAuthorizationDao">
+	<delete id="deleteAuthorizationByActorIdAuthorityIds">
+			delete from dream_a_authorization
+		<where>
+			<if test="actorId != null">AND actor_id = #{actorId}</if>
+			<if test="authorityIds != null">
+			AND authority_id in
+			<foreach collection="authorityIds" item="authorityId" index="index" open="(" separator="," close=")">
+					#{authorityId}
+				</foreach>
+			</if>
+		</where>
+	</delete>
+	<insert id="createAuthorization" parameterType="AdminAuthorizationModel">
+		insert into dream_a_authorization (id,actor_Id,authority_id)values(#{id},#{actorId},#{authorityId});
+	</insert>
+	<delete id="deleteAuthorizationByActorIdAuthorityId">
+		delete from dream_a_authorization
+		<where>
+			<if test="actorId != null">AND actor_id = #{actorId}</if>
+			<if test="authorityId != null">AND authority_id=#{authorityId}</if>
+		</where>
+	</delete>
+
+</mapper>

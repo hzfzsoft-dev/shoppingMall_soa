@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.admin.dao.AdminActorDao">
+	<select id="getUserByUserAccountPassword" resultType="AdminUserModel">
+		select * from dream_a_actor  aa
+		<where>
+			<if test="userAccount != null ">and aa.user_account = #{userAccount}</if>
+			<if test="password != null ">and aa.password = #{password}</if>
+		</where>
+		limit 1
+	</select>
+	
+	<update id="updateAdminUserExceptPassword" parameterType="AdminUserModel">
+		update dream_a_actor
+		<set>
+			<if test="name != null">name=#{name},</if>
+			<if test="description != null">description=#{description},</if>
+			<if test="email != null">email=#{email},</if>
+			<if test="disable != null">disable=#{disable},</if>
+			<if test="phone != null">phone=#{phone},</if>
+			<if test="lastLoginTime != null">last_login_time=#{lastLoginTime},</if>
+			<if test="passEncryptTimes != null">pass_encrypt_times=#{passEncryptTimes},</if>
+			<if test="accountLimitTime != null">account_limit_time=#{accountLimitTime},</if>
+		</set>
+		where id=#{id}
+	</update>
+ 
+	<select id="getActorsBy" resultType="AdminUserModel">
+		Select 
+		id, name, category, create_owner_id, description, user_account,email,
+		disable, phone,create_date,last_login_time,create_owner
+		from 
+		dream_a_actor
+		<where>
+			<if test="userAccount!=null">
+				AND user_account  like CONCAT('%', #{userAccount}, '%')
+			</if>
+			<if test="name!=null">
+				AND name like CONCAT('%', #{name}, '%')
+			</if>
+			<if test="email!=null">
+				AND email =#{email}
+			</if>
+			<if test="disable!=null">
+				AND disable =#{disable}
+			</if>
+			<if test="phone!=null">
+				AND phone =#{phone}
+			</if>
+			<if test="category!=null">
+				AND category = #{category}
+			</if>
+		</where>
+		limit #{limit},#{pageSize}
+	</select>
+
+	<select id="getActorsByCount" resultType="integer">
+		Select Count(id)
+		from dream_a_actor
+		<where>
+			<if test="userAccount!=null">
+				AND user_account like CONCAT('%', #{userAccount}, '%')
+			</if>
+			<if test="name!=null">
+				AND name like CONCAT('%', #{name}, '%')
+			</if>
+			<if test="email!=null">
+				AND email like CONCAT('%', #{email}, '%')
+			</if>
+			<if test="disable!=null">
+				AND disable = #{disable}
+			</if>
+			<if test="phone!=null">
+				AND phone like #{phone}
+			</if>
+			<if test="category!=null">
+				AND category = #{category}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getAdminUser" resultType="AdminUserModel">
+		select * from dream_a_actor where id=#{id}
+	</select>
+	
+	<insert id="addDepartmentActor">
+		insert into dream_a_department_actor
+		(department_id,
+		actor_id)
+		values (#{departmentId}, #{actorId})
+	</insert>
+	<insert id="createAdminUser" useGeneratedKeys="true"
+		keyProperty="id" parameterType="AdminUserModel">
+		insert into
+		dream_a_actor(name,
+		category, create_owner_id, description, user_account, password,
+		email,
+		disable, phone, salt, create_owner,role_type,resource_type)
+		values
+		(#{name,jdbcType=VARCHAR},#{category,jdbcType=VARCHAR},
+		#{createOwnerId,jdbcType=INTEGER},#{description,jdbcType=VARCHAR},#{userAccount,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},
+		#{email,jdbcType=VARCHAR},#{disable,jdbcType=TINYINT},#{phone,jdbcType=VARCHAR},#{salt,jdbcType=VARCHAR},
+		#{createOwner,jdbcType=VARCHAR},#{roleType},#{resourceType})
+	</insert>
+	
+	<delete id="deletAdminUser">
+		delete from dream_a_actor
+		where id =#{id}
+	</delete>
+	<update id="updateAdminUserPassword">
+		update dream_a_actor set password=#{defaultPassword}where id=#{id}
+	</update>
+	
+	<select id="pageQueryActorByRoleId" resultType="AdminUserModel">
+		select da.id,
+		da.name, da.category, da.create_owner_id, da.description,
+		da.user_account, da.email, da.disable, da.phone
+		from dream_a_actor da
+		INNER JOIN dream_a_authorization aa
+		ON da.id= aa.actor_id
+		<where>
+			<if test="roleId !=null">AND aa.authority_id= #{roleId}</if>
+		</where>
+		limit #{limit}, #{pageSize}
+	</select>
+
+	<select id="pageQueryActorByRoleId_count" resultType="integer">
+		select count(da.id)
+		from dream_a_actor da
+		INNER JOIN
+		dream_a_authorization aa
+		ON da.id= aa.actor_id
+		<where>
+			<if test="roleId !=null">AND aa.authority_id= #{roleId}</if>
+		</where>
+	</select>
+    <select id="getUserByUserAccount" resultType="AdminUserModel">
+		select * from dream_a_actor where user_account = #{userAccount} limit 1
+	</select>
+
+    <delete id="deleteUserInRole">
+		delete from dream_a_authorization
+		<where>
+			<if test="roleId !=null">AND authority_id= #{roleId}</if>
+			<if test="actorId !=null">AND actor_id =#{actorId}</if>
+		</where>
+	</delete>
+</mapper>

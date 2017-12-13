@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.help.dao.HelpCasePublicityDao">
+	
+	<select id="getCasePublicityList" resultType="CasePublicityVO">
+	   SELECT
+	   		a.id,
+			a.apply_code,
+			a.real_name,
+			a.apply_time,
+			a.product_name,
+			a.policy_code,
+			a.publicity_status,
+			a.debit_status,
+			a.modify_time,
+			b.`name` admin_user
+		FROM
+			ly_h_case_publicity a 
+		INNER JOIN dream_a_actor b on a.operator = b.id
+		ORDER BY
+			create_time DESC
+		LIMIT #{limit},#{pageSize}
+	</select>
+	
+	<select id="countCasePublicity" resultType="java.lang.Integer">
+		 select COUNT(*) from ly_h_case_publicity 
+	</select>
+	
+	<select id="getCasePublicityById" resultType="CasePublicityModel">
+		select * from ly_h_case_publicity where id = #{id}
+	</select>
+	
+	<select id="getJoinCount" resultType="java.lang.Integer">
+		SELECT
+			count(*)
+		FROM
+			ly_u_user_policy
+		WHERE
+			join_time &lt;= #{applyTime}
+		AND STATUS IN (1, 3, 4)
+		AND product_code = #{productCode}
+	</select>
+	
+	<update id="updateAmountData" >
+		UPDATE ly_h_case_publicity
+		SET help_amount = #{helpAmount}, assessed_amount = #{assessedAmount}, join_count = #{joinCount},real_help_amount = #{realHelpAmount}
+		WHERE
+			id = #{publicityId}
+	</update>
+	
+	<insert id="insertDataToPolicyDebit" >
+		INSERT INTO ly_h_policy_debit (
+			policy_code,
+			apply_code,
+			member_id,
+			rest_money,
+			create_time,
+			debit_status
+		) SELECT
+			a.policy_code,
+			#{applyCode},
+			a.member_id,
+			b.rest_money,
+			NOW(),
+			0
+		FROM
+			ly_u_user_policy a
+		LEFT JOIN ly_u_user_policy_account b ON a.policy_code = b.policy_code
+		WHERE
+			a.join_time &lt;= #{applyTime}
+		AND a.`status` IN (1, 3, 4)
+		AND a.product_code = #{productCode}
+	</insert>
+	
+	<update id="saveDescribe" >
+		UPDATE ly_h_case_publicity
+		SET help_brief =#{helpBrief}, survey_conclusion =#{surveyConclusion}, survey_conclusion_url =#{surveyConclusionUrl}
+		WHERE
+			id = #{publicityId}
+	</update>
+	
+	<update id="updatePublicityStatus" >
+		UPDATE ly_h_case_publicity
+		SET publicity_status = #{publicityStatus}
+		WHERE
+			id = #{publicityId}
+	</update>
+	
+	<update id="saveVoucher" >
+		UPDATE ly_h_case_publicity
+		SET voucher = #{voucher}
+		WHERE
+			id = #{publicityId}
+	</update>
+	
+	<update id="updatePublicityFeedback" >
+		UPDATE ly_h_case_publicity
+		SET publicity_feedback = #{publicityFeedback},publicity_status = 3
+		WHERE
+			id = #{publicityId}
+	</update>
+	
+	<select id="getHelpCasePhoto" resultType="HelpPhotoModel">
+		SELECT
+			*
+		FROM
+			ly_h_help_photo
+		WHERE
+			target_code = #{applyCode}
+		AND target_type = 2
+		AND photo_type = #{photoType}
+	</select>
+	
+	<update id="deletePhoto" >
+		delete from ly_h_help_photo where id = #{photoId}
+	</update>
+	
+	<insert id="savePhoto" parameterType="HelpPhotoModel">
+		INSERT INTO ly_h_help_photo (
+			target_code,
+			target_type,
+			photo_type,
+			path,
+			photo_name,
+			create_time
+		)
+		VALUES
+			(
+			#{targetCode},
+			#{targetType},
+			#{photoType},
+			#{path},
+			#{photoName},
+			#{createTime}
+			)
+	</insert>
+	
+	<insert id="insertCasePublicityPhoto">
+		INSERT INTO ly_h_help_photo(
+			target_code,
+			target_type,
+			photo_type,
+			path,
+			photo_name,
+			create_time
+		) SELECT
+			target_code,
+			2,
+			photo_type,
+			path,
+			photo_name,
+			NOW()
+		from ly_h_help_photo 
+		where target_code = #{applyCode} and target_type = 1 
+	</insert>
+	
+	<insert id="insertCasePublicity">
+		INSERT INTO ly_h_case_publicity(
+			apply_code,
+			policy_code,
+			publicity_status,
+			create_time,
+			debit_status,
+			real_name,
+			user_age,
+			join_day_age,
+			user_phone,
+			user_card,
+			bank_card,
+			card_holder,
+			bank_name,
+			bank_open_name,
+			product_name,
+			join_time,
+			job_time,
+			apply_time,
+			member_id
+		) SELECT
+			a.apply_code,
+			a.policy_code,
+			0,
+			NOW(),
+			0,
+			b.real_name,
+			a.join_age,
+			a.join_day_age,
+			a.phone,
+			b.identity_card,
+			a.card_number,
+			a.card_holder,
+			a.bank_name,
+			a.account_bank,
+			c.product_name,
+			b.join_time,
+			b.job_time,
+			a.create_time,
+			b.member_id
+		FROM
+			ly_h_help_apply a
+		LEFT JOIN ly_u_user_policy b ON a.policy_code = b.policy_code
+		LEFT JOIN ly_p_mutual_product c ON a.product_code = c.product_code
+		WHERE
+			a.apply_code = #{applyCode}
+	</insert>
+	
+	<select id="getCasePublicityByApplyCode" resultType="CasePublicityModel">
+		select * from ly_h_case_publicity where apply_code = #{applyCode} 
+	</select>
+	
+	<update id="updateDebitStatus">
+		update ly_h_case_publicity set debit_status = #{debitStatus} where id = #{publicityId}
+	</update>
+	
+	<select id="getCasePublicityUserList" resultType="java.lang.Integer">
+		SELECT
+			user_id
+		FROM
+			ly_u_user_policy
+		WHERE
+			product_code = #{productCode}
+		UNION
+			SELECT
+				user_id
+			FROM
+				ly_u_user_policy_relation
+			WHERE
+				product_code = #{productCode}
+	</select>
+	
+	<select id="getApplyDebitList" resultType="PolicyDebitModel">
+		SELECT
+			b.*
+		FROM
+			ly_h_case_publicity a
+		LEFT JOIN ly_h_policy_debit b ON a.apply_code = b.apply_code
+		WHERE
+			a.id = 2
+	</select>
+	
+	<select id="loadMutualProductByCode" resultType="MutualProductModel">
+		select *  from  ly_p_mutual_product  where product_code=#{productCode}  limit 1
+	</select>
+	
+	<select id="getHelpCasePhotoById" resultType="HelpPhotoModel">
+		select * from ly_h_help_photo where id = #{photoId}
+	</select>
+	
+	<update id="updateCasePhoto" parameterType="HelpPhotoModel">
+		update ly_h_help_photo set path = #{path} ,photo_name = #{photoName} where id = #{id}
+	</update>
+	
+	<update id="updateSubmitTime">
+		update ly_h_case_publicity set submit_time = now() where id = #{publicityId}
+	</update>
+	
+	<select id="getNumberPeriods" resultType="java.lang.Integer">
+		select count(*) from ly_h_case_publicity where submit_time &gt;= #{firstDay} and submit_time &lt;= #{lastDay}
+	</select>
+	
+	<select id="getProductCodeByApplyCode" resultType="java.lang.String">
+		select product_code from ly_h_help_apply where apply_code = #{apply_code}
+	</select>
+</mapper>

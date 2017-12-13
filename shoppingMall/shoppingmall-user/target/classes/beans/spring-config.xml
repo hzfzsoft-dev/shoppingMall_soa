@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/data/mongo
+      http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
+       ">
+
+	<context:component-scan base-package="org.fzsoft.shoppingmall" />
+	<context:component-scan base-package="org.fzsoft.shoppingmall.utils.jms"/>
+	<bean id="springProperties" class="org.fzsoft.shoppingmall.utils.prop.SpringProperties">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:/config/dev/system.properties</value>
+			</list>
+		</property>
+	</bean>
+
+<!--
+	<bean id="curatorClientFactory" class="org.fzsoft.shoppingmall.utils.cache.CuratorClientFactory"
+		lazy-init="true">
+		<property name="zkServer" value="${sys.zkServer}" />
+	</bean>
+	<bean id="curatorClient" factory-bean="curatorClientFactory"
+		factory-method="getCuratorClient" lazy-init="true" />
+		
+		&lt;!&ndash; 分布式锁 &ndash;&gt;
+	<bean id="distributeLockFactory" class="org.fzsoft.shoppingmall.utils.distributelock.DistributeLockFactory"
+		lazy-init="true">
+		<property name="curatorFramework" ref="curatorClient"></property>
+	</bean>
+	
+
+	&lt;!&ndash; 分布式session相关 &ndash;&gt;
+	<bean class="org.fzsoft.shoppingmall.utils.mvc.UserUtil">
+		<property name="cache" ref="redisTemplate" />
+	</bean>
+	&lt;!&ndash; spring data redis &ndash;&gt;
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal" value="20" />
+		<property name="maxIdle" value="10" />
+		<property name="minIdle" value="5" />
+	</bean>
+
+	<bean id="redisConnectionFactory"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		p:hostName="${sys.redis.hostName}" p:port="${sys.redis.port}"
+		p:usePool="${sys.redis.usePool}" p:database="${sys.redis.database}"
+		p:poolConfig-ref="jedisPoolConfig" p:password="${sys.redis.pass}" />
+
+	<bean id="fastJsonSerializer" class="org.fzsoft.shoppingmall.utils.cache.RedisJsonSerializer" />
+	<bean id="stringSerializer"
+		class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+
+	&lt;!&ndash; redis template definition &ndash;&gt;
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+		p:connectionFactory-ref="redisConnectionFactory"  
+		p:defaultSerializer-ref="fastJsonSerializer" p:keySerializer-ref="stringSerializer" />
+
+
+
+	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="${sys.jms.server}" />
+		<property name="userName" value="system" />
+		<property name="password" value="manager" />
+	</bean>
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory" />
+	</bean>
+	
+	&lt;!&ndash; 连接到指定mongodb库，根据实际情况修改 db-name &ndash;&gt;
+    <mongo:db-factory id="mongo" client-uri="${sys.mongo.uri}"/>
+
+    &lt;!&ndash; 注册 stockLoggerTemplate, spring的mongodb操作Template类， &ndash;&gt;
+    &lt;!&ndash; 类似 spring jdbc 的jdbcTemplate &ndash;&gt;
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg name="mongoDbFactory" ref="mongo"/>
+    </bean>-->
+</beans>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.product.dao.MutualProductDao">
+
+     <insert id="addMutualProduct" parameterType="MutualProductModel" useGeneratedKeys="true" keyProperty="id">
+		insert into ly_p_mutual_product (product_code,product_name,min_day_age,min_age,max_day_age,max_age,wait_days,product_type, init_money,warn_money,invalid_money,max_mutual_money,max_assess_money,versions,invalid_grace_days,annual_fee,create_time,modify_time,seq,scope)
+		values (#{productCode}, #{productName},#{minDayAge}, #{minAge}, #{maxDayAge},#{maxAge}, #{waitDays}, #{productType},#{initMoney},#{warnMoney},#{invalidMoney},#{maxMutualMoney},#{maxAssessMoney},#{versions},#{invalidGraceDays},#{annualFee},now(),now(),#{seq},#{scope})
+	</insert>
+	
+	<update id="updateMutualProduct"  parameterType="MutualProductModel">
+			update ly_p_mutual_product set product_name=#{productName},min_day_age=#{minDayAge},min_age=#{minAge},max_day_age=#{maxDayAge},max_age=#{maxAge},wait_days=#{waitDays},init_money=#{initMoney},
+			warn_money=#{warnMoney},invalid_money=#{invalidMoney},max_mutual_money=#{maxMutualMoney},max_assess_money=#{maxAssessMoney},annual_fee=#{annualFee},modify_time=now(),versions=#{versions},
+			invalid_grace_days=#{invalidGraceDays},seq=#{seq},scope=#{scope}
+			where product_code=#{productCode}
+	</update>
+	
+	<select id="queryMutualProduct" resultType="MutualProductVO">
+		select distinct t1.*,t2.rest_money  from  ly_p_mutual_product t1 left join ly_p_mutual_product_account t2 on t1.product_code=t2.product_code where t1.status=1  order by t1.seq
+	</select>
+	
+	<select id="queryMutualProductList" resultType="MutualProductVO">
+		select *  from  ly_p_mutual_product  where status=1  order by  seq
+	</select>
+	
+	<select id="queryMutualProductByCode" resultType="MutualProductVO">
+		select *  from ly_p_mutual_product where product_code=#{productCode}
+	</select>
+	
+	<select id="loadMutualProductByCode" resultType="MutualProductModel">
+		select *  from ly_p_mutual_product where product_code=#{productCode}
+	</select>
+	
+	
+	<update id="removeMutualProductByCode">
+		update ly_p_mutual_product set status=0,product_type=0 where product_code=#{productCode}
+	</update>
+	
+	<update id="updateProductTypeByCode">
+		update ly_p_mutual_product set product_type=#{productType} where product_code=#{productCode}
+	</update>
+	
+	<update id="updateDownTimeByCode">
+		update ly_p_mutual_product set down_time=now() where product_code=#{productCode}
+	</update>
+	
+	<update id="updateOnlineTimeByCode">
+		update ly_p_mutual_product set online_time=now()  where product_code=#{productCode}
+	</update>
+	
+	<select id="findProudctNames" resultType="string">
+		select product_name from ly_p_mutual_product 
+	</select>
+	
+	<select id="queryOnlineMutualProduct" resultType="MutualProductVO">
+		select distinct t1.*,t2.rest_money  from  ly_p_mutual_product t1 left join ly_p_mutual_product_account t2 on t1.product_code=t2.product_code where t1.status=1 and t1.product_type=1 order by t1.seq
+	</select>
+	
+	<select id="findMutualProductCodeList" resultType="string">
+		select product_code from ly_p_mutual_product where product_type =1
+	</select>
+	
+	<select id="queryProductByCode" resultType="MutualProductModel">
+		select *  from ly_p_mutual_product where product_code=#{productCode} limit 1
+	</select>
+	
+	<update id="updateDecMembers">
+		update ly_p_mutual_product set members=members-1 where product_code=#{productCode}
+	</update>
+	
+	<select id="loadProductById" resultType="MutualProductModel">
+		select *  from ly_p_mutual_product where id=#{id} limit 1
+	</select>
+	
+</mapper>

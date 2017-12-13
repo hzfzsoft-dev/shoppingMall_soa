@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.product.dao.MutualProductAccountStatDao">
+
+	<select id="queryProductAccountStat" resultType="MutualProductAccountStatModel" >
+		select * from ly_p_mutual_product_account_stat  where product_code =#{productCode}
+		and stat_date &gt;= #{startTime} and stat_date &lt;= #{endTime}
+		order by create_time asc
+	</select>
+	
+	<select id="queryNewStatByCode" resultType="MutualProductAccountStatModel" >
+		select * from ly_p_mutual_product_account_stat  where product_code =#{productCode}
+		order by create_time desc limit 1;
+	</select>
+	
+	<insert id="addProductAccountStat" parameterType="MutualProductAccountStatModel" useGeneratedKeys="true" keyProperty="id">
+		insert into ly_p_mutual_product_account_stat (product_code,total_money,increment_money,stat_date,create_time,modify_time)
+		values(#{productCode},#{totalMoney},#{incrementMoney},#{statDate},now(),now())
+	</insert>
+	
+</mapper>

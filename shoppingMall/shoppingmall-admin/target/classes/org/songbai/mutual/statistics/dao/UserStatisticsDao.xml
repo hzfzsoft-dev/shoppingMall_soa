@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.statistics.dao.UserStatisticsDao">
+	<select id="countByDays" resultType="UserStatisticsVO">
+		select  statistics.* from ly_u_user_statistics  statistics 
+		where type=#{type} and date &gt;= #{startDay}  and date &lt;= #{endDay}  
+		order by date
+	</select>
+	
+	<select id="loadUserStatisticsBySubdays" resultType="UserStatisticsModel">
+		select * from ly_u_user_statistics where datediff(now(),date)=#{days}+1 and source =#{source} and type=#{type}
+	</select>
+	
+	<select id="loadMemberStatisticsBySubdays" resultType="UserStatisticsModel">
+		select * from ly_u_user_statistics where datediff(now(),date)=#{days}+1 and product_code =#{productCode} and type=#{type}
+	</select>
+	
+	
+	<insert id="insertUserTodayStatistics" parameterType="UserStatisticsModel" useGeneratedKeys="true" keyProperty="id">
+		insert into ly_u_user_statistics (type,date,total,increment,three_days_increment,five_days_increment,source,product_code) values(#{type},#{date},#{total},#{increment},#{threeDaysIncrement},#{fiveDaysIncrement},#{source},#{productCode})
+	</insert>
+	
+	<select id="countMemberByDays" resultType="UserStatisticsVO">
+		select  statistics.*,product.product_name from ly_u_user_statistics  statistics left join ly_p_mutual_product product on statistics.product_code=product.product_code
+		where type=#{type} and date &gt;= #{startDay}  and date &lt;= #{endDay}  and product.product_type=1	
+		order by date
+	</select>
+	
+	<select id="loadTotalBySubdays" resultType="integer">
+		select sum(total) from ly_u_user_statistics where datediff(now(),date)=#{days} and type=#{type}
+	</select>
+	
+
+		
+</mapper>

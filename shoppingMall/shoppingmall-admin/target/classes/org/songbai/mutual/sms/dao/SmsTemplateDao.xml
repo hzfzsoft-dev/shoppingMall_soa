@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.sms.dao.SmsTemplateDao">
+	 <insert id="addTemplate" parameterType="SmsTemplateModel" useGeneratedKeys="true" keyProperty="id">
+		insert into dream_m_sms_template
+		(
+			<trim suffixOverrides=",">
+				<if test="name != null " > name,</if>
+				<if test="template != null " > template,</if>
+				<if test="type != null " > type,</if>
+				<if test="extraParam != null">extra_param,</if>
+				<if test="templateType != null">template_type,</if>
+			</trim>
+		) 
+		values(
+			<trim suffixOverrides=",">
+				<if test="name != null " > #{name},  </if>
+				<if test="template != null " > #{template},  </if>
+				<if test="type != null " > #{type},  </if>
+				<if test="extraParam != null">#{extraParam},</if>
+				<if test="templateType != null">#{templateType}</if>
+			</trim>
+		)
+	</insert>
+	<select id="pagingQuery" parameterType="Integer" resultType="SmsTemplateModel">
+		select * from dream_m_sms_template where is_delete  = 1 limit #{limit}, #{pageSize} 
+	</select>
+	
+	<select id="pagingQueryBy_count" resultType="Integer" >
+		select count(sms.id) from dream_m_sms_template sms
+		where sms.is_delete=1
+	</select>
+	
+	<update id="updateTemplate" parameterType="SmsTemplateModel">
+		update dream_m_sms_template 
+		<set>
+			<if test="name!=null">name=#{name},</if>
+			<if test="template!=null">template=#{template},</if>
+			<if test="isDelete!=null">is_delete=#{isDelete},</if>
+			<if test="type != null">type=#{type},</if>
+			<if test="extraParam != null">extra_param = #{extraParam},</if>
+			<if test="templateType != null">template_type = #{templateType}</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<select id="getChannelTemplate" parameterType="java.lang.Integer" resultType="SmsTemplateModel">
+		select * from dream_m_sms_template where is_delete = 1 and type = #{type}
+	</select>
+	
+	<update id="removeTemplate" parameterType="Integer">
+		update dream_m_sms_template set is_delete=0 where id=#{id}
+	</update>
+
+	<select id="getSmsTemplateById" parameterType="java.lang.Integer" resultType="SmsTemplateModel">
+		select * from dream_m_sms_template where  id = #{id}
+	</select>
+
+	<select id="getSmsTemplateByType" resultType="SmsTemplateModel">
+		select * from dream_m_sms_template where type = #{type} and template_type = #{templateType} limit 1
+	</select>
+
+</mapper>

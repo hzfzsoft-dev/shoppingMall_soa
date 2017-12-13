@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- plugins在配置文件中的位置必须符合要求，否则会报错，顺序如下: properties, settings, typeAliases,
+        typeHandlers, objectFactory,objectWrapperFactory, plugins, environments,
+        databaseIdProvider, mappers -->
+    <settings>
+        <!-- 设置驼峰转换，例如数据库字段user_name可以映射到javaBean的属性userName上 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+    </settings>
+    <typeAliases>
+	        <package name="org.songbai.mutual.model"/>
+	        <package name="org.songbai.mutual.admin.model"/>
+	        <package name="org.songbai.mutual.config.model"/>
+	        <package name="org.songbai.mutual.admin.vo"/>
+	        <package name="org.songbai.mutual.product.vo"/>
+	        <package name="org.songbai.mutual.user.vo"/>
+	        <package name="org.songbai.mutual.model.vo.*"/>
+	        <package name="org.songbai.mutual.vo.statistics"/>
+	        <package name="org.songbai.mutual.vo.fish"/>
+	        <package name="org.songbai.mutual.fish.vo"/>
+	        <package name="org.songbai.mutual.model.wx"/>
+	        <package name="org.songbai.mutual.finance.vo"/>
+	        <package name="org.songbai.mutual.help.vo"/> 
+	         
+    </typeAliases>
+</configuration>

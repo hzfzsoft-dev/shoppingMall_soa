@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.admin.dao.UpdateVersionDao">
+	<select id="findUpdateVersionById" resultType="AppVersionVO">
+		select app.*,actor.name from dream_a_appversion app left join dream_a_actor actor on app.modify_user=actor.id
+		where app.id=#{id}
+	</select>
+	
+	<insert id="addUpdateVersion" parameterType="AppVersionModel" useGeneratedKeys="true" keyProperty="id">
+		insert into dream_a_appversion(platform,update_all_pre_versions,force_update_all_pre_versions,force_update_pre_versions
+		,last_version,download_url,create_time,modify_user,modify_time,update_log,remark) 
+		values(#{platform},#{updateAllPreVersions},#{forceUpdateAllPreVersions},#{forceUpdatePreVersions}
+		,#{lastVersion},#{downloadUrl},now(),#{modifyUser},now(),#{updateLog},#{remark})
+	</insert>
+	
+	<update id="updateForceVersion" parameterType="AppVersionModel" >
+		update dream_a_appversion  
+		<set>
+			<if test="updateAllPreVersions!=null">
+				update_all_pre_versions=#{updateAllPreVersions},
+			</if>
+			<if test="forceUpdateAllPreVersions!=null">
+				force_update_all_pre_versions=#{forceUpdateAllPreVersions},
+			</if>
+			<if test="forceUpdatePreVersions!=null">
+				force_update_pre_versions=#{forceUpdatePreVersions},
+			</if>
+			<if test="lastVersion!=null">
+				last_version=#{lastVersion},
+			</if>
+			<if test="downloadUrl!=null">
+				download_url=#{downloadUrl},
+			</if>
+			<if test="modifyUser!=null">
+				modify_user=#{modifyUser},
+			</if>
+			<if test="updateLog!=null">
+				update_log=#{updateLog},
+			</if>
+			<if test="remark!=null">
+				remark=#{remark}
+			</if>
+		</set>
+		where id=#{id}
+	
+	</update>
+	
+	<select id="findByPage" resultType="AppVersionVO">
+		select app.*,actor.name as modify_name from dream_a_appversion app left join dream_a_actor actor on app.modify_user=actor.id
+		<where>
+			<if test="version.platform !=null">
+				platform=#{version.platform}
+			</if>
+			<if test="version.updateAllPreVersions!=null">
+				and update_all_pre_versions=#{version.updateAllPreVersions}
+			</if>
+			<if test="version.forceUpdateAllPreVersions!=null">
+				and force_update_all_pre_versions=#{version.forceUpdateAllPreVersions}
+			</if>
+			<if test="version.forceUpdatePreVersions!=null">
+				and force_update_pre_versions=#{version.forceUpdatePreVersions}
+			</if>
+			<if test="version.lastVersion!=null">
+				and last_version=#{version.lastVersion}
+			</if>
+			<if test="version.downloadUrl!=null">
+				and download_url=#{version.downloadUrl}
+			</if>
+			<if test="version.modifyUser!=null">
+				and modify_user=#{version.modifyUser}
+			</if>
+			<if test="version.modifyName!=null">
+				and actor.name=#{version.modifyName}
+			</if>
+			<if test="version.updateLog!=null">
+				and update_log=#{version.updateLog}
+			</if>
+			<if test="version.remark!=null">
+				and remark=#{version.remark}
+			</if>
+			
+		</where>
+		limit #{limit},#{pageSize}
+	</select>
+	
+	<select id="findByPage_count" resultType="integer">
+		select Count(*) from dream_a_appversion app left join dream_a_actor actor on app.modify_user=actor.id
+		<where>
+			<if test="platform !=null">
+				platform=#{platform}
+			</if>
+			<if test="updateAllPreVersions!=null">
+				and update_all_pre_versions=#{updateAllPreVersions}
+			</if>
+			<if test="forceUpdateAllPreVersions!=null">
+				and force_update_all_pre_versions=#{forceUpdateAllPreVersions}
+			</if>
+			<if test="forceUpdatePreVersions!=null">
+				and force_update_pre_versions=#{forceUpdatePreVersions}
+			</if>
+			<if test="lastVersion!=null">
+				and last_version=#{lastVersion}
+			</if>
+			<if test="downloadUrl!=null">
+				and download_url=#{downloadUrl}
+			</if>
+			<if test="modifyUser!=null">
+				and modify_user=#{modifyUser}
+			</if>
+			<if test="modifyName!=null">
+				and actor.name=#{modifyName}
+			</if>
+			<if test="updateLog!=null">
+				and update_log=#{updateLog}
+			</if>
+			<if test="remark!=null">
+				and remark=#{remark}
+			</if>
+			
+		</where>
+	</select>
+	
+	
+	
+</mapper>

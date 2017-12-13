@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.admin.dao.AdminCertificationAuditeDao">
+	
+	<select id="queryCertificationAudite" resultType="adminCertificationAuditeModel">
+		select cert.id, cert.user_id, auser.user_name as nickName, cert.real_name, cert.cert_code,cert.auditer, cert.status, cert.create_date as createTime,cert.audite_date as auditeTime,cert.remark
+		from dream_u_certification cert left join dream_u_user auser on cert.user_id = auser.id
+		<where>
+			<if test="userId != null">
+				and cert.user_id = #{userId}
+			</if>
+			<if test="nickName != null">
+				and auser.user_name like concat('%', #{nickName}, '%')
+			</if>
+			<if test="realName != null">
+				and cert.real_name like concat('%', #{realName}, '%')
+			</if>
+			<if test="phone != null">
+				and auser.user_phone like concat('%', #{phone}, '%')
+			</if>
+			<if test="certCode != null">
+				and cert.cert_code like concat('%', #{certCode}, '%')
+			</if>
+			<if test="status != null">
+				and cert.status = #{status}
+			</if>
+		</where>
+		order by create_date desc
+		limit #{limit}, #{pageSize}
+	</select>
+	
+	
+	
+	<select id="queryCertificationAuditeCount" resultType="Integer">
+		select count(cert.id)
+		from dream_u_certification cert left join dream_u_user auser on cert.user_id = auser.id
+		<where>
+			<if test="userId != null">
+				and cert.user_id = #{userId}
+			</if>
+			<if test="nickName != null">
+				and auser.user_name like concat('%', #{nickName}, '%')
+			</if>
+			<if test="realName != null">
+				and cert.real_name like concat('%', #{realName}, '%')
+			</if>
+			<if test="phone != null">
+				and auser.user_phone like concat('%', #{phone}, '%')
+			</if>
+			<if test="certCode != null">
+				and cert.cert_code like concat('%', #{certCode}, '%')
+			</if>
+			<if test="status != null">
+				and cert.status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<update id="updateCertificationAuditeBySuccess" parameterType="adminCertificationAuditeModel">
+		update dream_u_certification 
+		set auditer = #{auditer},status = #{status},audite_date = #{auditeTime}
+		where id = #{id}
+	</update>
+	
+	<update id="updateCertificationAuditeByFail" parameterType="adminCertificationAuditeModel">
+		update dream_u_certification 
+		set  status = #{status},
+		auditer = #{auditer},
+		audite_date = #{auditeTime},
+		remark = #{remark}
+		where id = #{id}
+	</update>
+	
+	<update id="updateUserCertification">
+		update dream_u_user set certification_status = #{status} where id = #{userId}
+	</update>
+	
+	
+	<select id="findCertificationAudite" resultType="AdminCertificationAuditeModel">
+		select * from dream_u_certification where id = #{userId} limit 1
+	</select>
+	
+	<select id="findUserById" resultType="userModel">
+		<!-- select user.*, cert.cert_code from dream_u_user user left join dream_u_certification cert on user.id = cert.user_id
+		where user.id = #{userId} -->
+		select * from dream_u_user where id = #{userId}
+	</select>
+	<select id="findUserCertificationBySuccess" resultType="Integer">
+		select count(1) from dream_u_certification where user_id = (
+			select distinct user_id from dream_u_certification where id = #{userInfoId}
+		) and status = 1
+	</select>
+	
+	<select id="findUserIdByUserInfoId" resultType="Integer">
+		select user_id from dream_u_certification where id = #{userInfoId} limit 1
+	</select>
+	
+	
+	
+</mapper>

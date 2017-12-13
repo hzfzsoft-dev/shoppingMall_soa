@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.user.dao.UserDao">
+	<select id="queryPageUsersByLimit" parameterType="UserModel" resultType="UserModel">
+		select id,user_name,user_portrait,address,sex,age,phone,status,login_num,last_login_time,
+		self_member_id,buy_count,source,create_time,modify_time 
+		from ly_u_user	
+		<where>
+			<if test="user.userName!=null">
+				user_name like CONCAT('%',#{user.userName},'%' ) 
+			</if>
+			<if test="user.source!=null">
+				and source =#{user.source}
+			</if>
+			<if test="user.phone!=null">
+				and phone like CONCAT('%',#{user.phone},'%' )
+			</if>
+			<if test="user.sex!=null">
+				and sex=#{user.sex}
+			</if>
+			<if test="createTimeStart!=null">
+				and create_time &gt;= #{createTimeStart}
+			</if>
+			<if test="createTimeEnd!=null">
+				and create_time &lt;= #{createTimeEnd}
+			</if>
+		</where>
+		order by create_time desc
+		limit #{limit},#{pageSize}
+	</select>
+	
+	<select id="queryUsersCount" parameterType="UserModel" resultType="integer">
+		select count(*) from ly_u_user
+			<where>
+			<if test="user.userName!=null">
+				user_name like CONCAT('%',#{user.userName},'%' ) 
+			</if>
+			<if test="user.source!=null">
+				and source =#{user.source}
+			</if>
+			<if test="user.phone!=null">
+				and phone like CONCAT('%',#{user.phone},'%' )
+			</if>
+			<if test="user.sex!=null">
+				and sex=#{user.sex}
+			</if>
+			<if test="createTimeStart!=null">
+				and create_time &gt;= #{createTimeStart}
+			</if>
+			<if test="createTimeEnd!=null">
+				and create_time &lt;= #{createTimeEnd}
+			</if>
+		</where>
+	
+	</select>
+	
+	<select id="queryPageMembersByLimit" resultType="MemberModel" >
+		select * from ly_u_member  where status=1
+			<if test="member.realName!=null"> and real_name like CONCAT('%',#{member.realName},'%' ) </if>
+			<if test="member.identityCard!=null">and identity_card like CONCAT('%',#{member.identityCard},'%' )</if>
+			order by create_time DESC
+			limit #{limit},#{pageSize}
+	</select>
+	
+	<select id="queryMembersCount" resultType="integer" parameterType="MemberModel">
+		select count(*) from ly_u_member  where status=1
+			<if test="realName!=null"> and real_name like CONCAT('%',#{realName},'%' )</if>
+			<if test="identityCard!=null">and identity_card like CONCAT('%',#{identityCard},'%' ) </if>
+			order by create_time DESC
+	</select>
+	
+	<select id="loadUserDetailByUserId" resultType="UserVO" parameterType="integer">
+		select user.id as user_id,user.user_name,user.user_portrait,user.phone,user.status as user_status,member.id as member_id,member.real_name,user.self_member_id,member.identity_card,member.status as member_status  
+		from ly_u_user user left join ly_u_member member on user.self_member_id=member.id
+		where user.id=#{userId}
+	</select>
+	
+	<select id="loadUserDetailByMemberId" resultType="UserVO" parameterType="integer">
+		select user.id as user_id,user.user_name,user.user_portrait,user.phone,user.status as user_status,member.id as member_id,member.real_name,user.self_member_id,member.identity_card,member.status as member_status 
+		,owner.user_name as owner_user 
+		from ly_u_member member 
+		left join ly_u_user user on user.self_member_id=member.id
+		left join ly_u_user owner on owner.id=member.user_id 
+		where member.id=#{memberId}
+	</select>
+	
+	<select id="findPolicybyUserId" resultType="UserPolicyVO" parameterType="integer">
+		select  policy.*,relation.relation,member.real_name,product.product_name,account.rest_money,account.mutual_count from ly_u_user_policy policy 
+		left join ly_u_relation relation on policy.member_id =relation.member_id 
+		left join ly_u_member member on policy.member_id=member.id
+		left join ly_u_user_policy_account account on account.policy_code=policy.policy_code
+		left join ly_p_mutual_product product on product.product_code=policy.product_code
+		where policy.user_id=#{userId} and policy.status!=#{status}
+		order by create_time desc
+	</select>
+	
+	<select id="findPolicybymemberId" resultType="UserPolicyVO" parameterType="integer">
+		select policy.*,member.real_name,product.product_name,account.rest_money,account.mutual_count from ly_u_user_policy  policy
+		left join ly_u_member member on policy.member_id=member.id
+		left join ly_u_user_policy_account account on account.policy_code=policy.policy_code
+		left join ly_p_mutual_product product on product.product_code=policy.product_code
+		where policy.member_id=#{memberId} and policy.status!=#{status}
+		order by create_time desc
+	</select>
+	
+	<select id="queryUserFlowByProductCode" resultType="UserPolicyFlowModel">
+		select * from ly_u_user_policy_flow 
+		<where>
+			user_id=#{userId} and product_code=#{productCode} 
+			<if test="flowType!=null">
+				and flow_type=#{flowType}
+			</if>
+		</where>
+		order by create_time DESC
+		limit #{limit},#{pageSize}
+	</select>
+	
+	<select id="queryUserFlowCountByProductCode" resultType="integer">
+		select count(*) from ly_u_user_policy_flow 
+		<where>
+			user_id=#{userId} and product_code=#{productCode} 
+			<if test="flowType!=null">
+				and flow_type=#{flowType}
+			</if>
+		</where>
+	</select>
+	<select id="loadUserIn" resultType="double">
+		select sum(money) from ly_u_user_policy_flow 
+		where policy_code=#{policyCode} and flow_type in (1,2)
+	</select>
+	<select id="loadUserOut" resultType="double">
+		select sum(money) from ly_u_user_policy_flow 
+		where policy_code=#{policyCode} and flow_type in(3,4)
+	</select>
+	<select id="loadUserIdentityCardById" resultType="string">
+		select  identity_card from ly_u_member where id=#{memberId} 
+	</select>
+	<select id="loadUserPhoneById" resultType="string">
+		select  phone from ly_u_user where id=#{userId} 
+	</select>
+	
+	<select id="countUserToday" resultType="integer">
+		select count(*) from ly_u_user where status=1 and datediff(now(),create_time) &gt;=1 and source=#{source}
+	</select>
+	<select id="countMemberToday" resultType="integer">
+		select count(*) from ly_u_user_policy where status in 
+		<foreach collection="status" index="index" item="item" open="(" separator="," close=")">
+               		#{item}       
+      	</foreach>  	
+		and datediff(now(),join_time) &gt;=1 and product_code=#{productCode}
+	</select>
+	
+	<select id="countUserTotalToday" resultType="integer">
+		select count(*) from ly_u_user where status=1 
+	</select>
+	
+	<select id="countMemberTotalToday" resultType="integer">
+		select count(*) from ly_u_user_policy where status in 
+		<foreach collection="status" index="index" item="item" open="(" separator="," close=")">
+               		#{item}       
+      	</foreach>  	
+	</select>
+	<select id="queryPageUserInvitee" resultType="UserPolicyVO">
+		select * from ly_u_user_policy where invite_user=#{userId} 
+		order by create_time desc
+		limit #{limit},#{pageSize}
+	</select>
+	
+	<select id="countUserInvitee"  resultType="integer" parameterType="integer">
+		select count(*) from ly_u_user_policy where invite_user=#{userId} 
+		order by create_time desc
+	</select>
+	
+	<select id="loadMemberById" resultType="MemberModel">
+    	select * from ly_u_member where id=#{memberId}
+    </select>
+    <select id="queryLinkmanByUser" resultType="UserRelationModel">
+    	select * from ly_u_relation where user_id=#{userId}
+    	order by create_time desc
+    	limit #{limit},#{pageSize}
+    </select>
+    
+    <select id="countLinkmanByUser" resultType="integer">
+    	select count(*) from ly_u_relation where user_id=#{userId}
+    </select>
+    <select id="queryPolicyByUserAndStatus" resultType="UserPolicyVO">
+    	select * from ly_u_user_policy where user_id=#{userId} and status =#{status} and deleted =0 order by create_time Desc
+    </select>
+     <select id="countPolicyByUserAndStatus" resultType="integer">
+    	select count(*) from ly_u_user_policy where user_id=#{userId} and status =#{status} and deleted =0
+    </select>
+
+
+	<select id="loadUserByPhoneAndUserName" resultType="UserModel">
+		select id,user_name,phone from ly_u_user where phone=#{phone} and user_name=#{userName} limit 1
+	</select>
+
+	<select id="loadMemberByIdentityCard" resultType="MemberModel">
+		select * from ly_u_member where identity_card=#{identityCard} limit 1
+	</select>
+		
+</mapper>

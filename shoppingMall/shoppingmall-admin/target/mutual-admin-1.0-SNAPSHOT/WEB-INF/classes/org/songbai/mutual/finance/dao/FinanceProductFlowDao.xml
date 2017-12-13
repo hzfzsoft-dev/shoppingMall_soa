@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.finance.dao.FinanceProductFlowDao">
+	
+	
+	<select id="queryProductFlowByPage" resultType="FinanceProductFlowVO">
+		select m.real_name,m.identity_card IdCard,p.flow_type,p.money,p.redbag,p.create_time ,p.flow_remark,p.product_code
+ 		from ly_p_mutual_product_account_flow p
+ 		left join ly_u_member m ON m.id= p.member_id
+	<where>
+		<if test="finance.productCode != null">
+				and p.product_code = #{finance.productCode}
+			</if>
+			<if test="finance.realName != null">
+				and m.real_name like CONCAT('%',#{finance.realName},'%' ) 
+			</if>
+			<if test="finance.IdCard != null">
+				and m.identity_card  like CONCAT('%',#{finance.IdCard},'%' ) 
+			</if>
+			<if test="startTime != null">
+				and p.create_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null">
+				and p.create_time &lt;= #{endTime}
+			</if>
+			<if test="finance.flowType != null">
+				and p.flow_type = #{finance.flowType}
+			</if>
+		</where>
+		order by p.create_time DESC ,p.id DESC
+		limit ${start}, ${pageSize}
+	</select>
+	<select id="countProductFlow" resultType="integer">
+	select count(*)
+	from ly_p_mutual_product_account_flow p
+	left join ly_u_member m on m.id= p.member_id
+	<where>
+		<if test="finance.productCode != null">
+				and p.product_code = #{finance.productCode}
+			</if>
+			<if test="finance.realName != null">
+				and m.real_name like CONCAT('%',#{finance.realName},'%' ) 
+			</if>
+			<if test="finance.IdCard != null">
+				and m.identity_card like CONCAT('%',#{finance.IdCard},'%' )
+			</if>
+			<if test="startTime != null">
+				and p.create_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null">
+				and p.create_time &lt;= #{endTime}
+			</if>
+			<if test="finance.flowType != null">
+				and p.flow_type = #{finance.flowType}
+			</if>
+		</where>
+	</select>
+	<select id="amountProductFlow" resultType="java.util.Map">
+		SELECT sum(redbag) redbag,sum(money) as money FROM ly_p_mutual_product_account_flow p
+		left join ly_u_member m on m.id= p.member_id
+		<where>
+			<if test="finance.productCode != null">
+				and p.product_code = #{finance.productCode}
+			</if>
+			<if test="finance.realName != null">
+				and m.real_name like CONCAT('%',#{finance.realName},'%' )
+			</if>
+			<if test="finance.IdCard != null">
+				and m.identity_card like CONCAT('%',#{finance.IdCard},'%' )
+			</if>
+			<if test="startTime != null">
+				and p.create_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null">
+				and p.create_time &lt;= #{endTime}
+			</if>
+			<if test="finance.flowType != null">
+				and p.flow_type = #{finance.flowType}
+			</if>
+			<if test="add!=null">
+				and p.flow_type in
+				<foreach collection="add" item="item"  open="(" separator="," close=" ) ">
+				#{item}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	<select id="downloadFlow" resultType="map">
+		select p.id,m.real_name as realName,m.identity_card as IdCard,p.product_code as productCode,p.flow_type as flowType,p.money,p.redbag,date_format(p.create_time,'%Y-%m-%d %H:%i:%s')as createTime ,p.flow_remark as flowRemark ,p.product_code
+		from ly_p_mutual_product_account_flow p
+		left join ly_u_member m ON m.id= p.member_id
+		<where>
+			<if test="productCode != null">
+				and p.product_code = #{productCode}
+			</if>
+			<if test="realName != null">
+				and m.real_name like CONCAT('%',#{realName},'%' )
+			</if>
+			<if test="identityCard != null">
+				and m.identity_card  like CONCAT('%',#{identityCard},'%' )
+			</if>
+			<if test="startTime != null">
+				and p.create_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null">
+				and p.create_time &lt;= #{endTime}
+			</if>
+			<if test="flowType != null">
+				and p.flow_type = #{flowType}
+			</if>
+		</where>
+		order by p.create_time DESC ,p.id DESC
+
+		limit #{page},#{pageSize}
+	</select>
+</mapper>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.fish.dao.UserFishDao">
+	<select id="queryUserFishByUserId" resultType="UserFishAdminVO">
+		select * from ly_f_user_fish where user_id=#{userId}
+		order by create_time DESC
+		limit #{limit},#{pageSize}
+	</select>
+	
+	<select id="countUserFishByUserId" resultType="integer" parameterType="integer">
+		select count(*) from ly_f_user_fish where user_id=#{userId}
+		order by create_time DESC
+	</select>
+	
+	<select id="queryUserFishByStatusAndTypeCount" resultType="integer">
+		select count(*) from ly_f_user_fish where fish_type = #{fishType} and status in 
+	    <foreach collection="statusArray" item="status" index="index" open="(" separator="," close=")">
+					#{status}
+	   </foreach>
+	   <if test="startTime!=null">
+	      and  create_time  &gt;=  #{startTime}  
+	   </if>
+	   <if test="endTime!=null">
+	      and create_time   &lt;= #{endTime}
+	   </if>
+	   <if test="finishStartTime !=null ">
+	       and  finish_time &gt;= #{finishStartTime}  
+	   </if>
+	   <if test="finishEndTime !=null ">
+	      and finish_time  &lt;=  #{finishEndTime}  
+	   </if>
+	</select>
+	
+	<select id="loadUserFishFinishByTypeSort" resultType="integer">
+		SELECT (TO_DAYS(finish_time) - TO_DAYS(create_time)+1)  AS finishTime  FROM ly_f_user_fish  WHERE fish_type=#{fishType} and  finish_time IS NOT NULL 
+		<if test="startTime!=null">
+	      and create_time  &gt;=  #{startTime}  
+	   </if>
+	   <if test="endTime!=null">
+	      and create_time   &lt;= #{endTime}
+	   </if>
+	   <if test="finishStartTime !=null ">
+	       and  finish_time &gt;= #{finishStartTime}  
+	   </if>
+	   <if test="finishEndTime !=null ">
+	      and finish_time  &lt;=  #{finishEndTime}  
+	   </if>
+		
+		ORDER BY finishTime ${sort} limit 1
+	</select>
+	
+	<select id="loadSumUserFishFinishByType" resultType="integer">
+		SELECT SUM((TO_DAYS(finish_time) - TO_DAYS(create_time)+1))  as finishTime FROM ly_f_user_fish  where fish_type=#{fishType} and finish_time is not null
+		<if test="startTime!=null">
+	      and create_time  &gt;=  #{startTime}  
+	   </if>
+	   <if test="endTime!=null">
+	      and create_time   &lt;= #{endTime}
+	   </if>
+	   <if test="finishStartTime !=null ">
+	       and  finish_time &gt;= #{finishStartTime}  
+	   </if>
+	   <if test="finishEndTime !=null ">
+	     and  finish_time  &lt;=  #{finishEndTime}  
+	   </if>
+	   
+	</select>
+	
+	<select id="queryFishDeatil" resultType="UserFishDetailVO">
+		SELECT
+			f.create_time,
+			f.finish_time,
+			f.`STATUS`,
+			f.fish_type,
+			f.nick_name,
+			f.feed_foods,
+			u.user_name,
+			u.phone,
+			r.real_name
+		FROM
+			ly_f_user_fish f
+		LEFT JOIN ly_u_user u ON f.user_id = u.id
+		LEFT JOIN ly_u_relation r on r.user_id = f.user_id and r.relation = 0
+		WHERE 1=1 
+		<if test="model.startTime != null">
+			and f.create_time &gt;= #{model.startTime} 
+		</if>
+		<if test="model.endTime != null">
+			and f.create_time &lt;= #{model.endTime} 
+		</if>
+		<if test="model.finishStartTime != null">
+			AND f.finish_time &gt;= #{model.finishStartTime}
+		</if>
+		<if test="model.finishEndTime != null">
+			AND f.finish_time &lt;= #{model.finishEndTime}
+		</if>	
+		<if test="model.fishStatus != null">
+			and f.`STATUS` = #{model.fishStatus}
+		</if>
+		<if test="model.fishType != null">
+			and f.fish_type = #{model.fishType}
+		</if>
+		Order by f.create_time desc
+		LIMIT #{limit},#{pageSize}
+	</select>
+	
+	<select id="countUserFish" resultType="integer" parameterType="FishDetailStatisticsModel">
+		select count(*) from ly_f_user_fish
+		WHERE 1=1 
+		<if test="startTime != null">
+			and create_time &gt;= #{startTime} 
+		</if>
+		<if test="endTime != null">
+			and create_time &lt;= #{endTime} 
+		</if>
+		<if test="finishStartTime != null">
+			AND finish_time &gt;= #{finishStartTime}
+		</if>
+		<if test="finishEndTime != null">
+			AND finish_time &lt;= #{finishEndTime}
+		</if>	
+		<if test="fishStatus != null">
+			and `STATUS` = #{fishStatus}
+		</if>
+		<if test="fishType != null">
+			and fish_type = #{fishType}
+		</if>
+	</select>  
+	     
+</mapper>

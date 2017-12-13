@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.finance.dao.FinanceUserRechargeDao">
+	
+	<select id="queryUserRecharge"  resultType="FinanceUserRechargeVO">
+		 select m.real_name ,m.identity_card IDCard ,c.recharge_money ,c.platform_id,c.recharge_status,c.id id,c.io_order_id ioOrderId,c.create_time createTime,c.success_time successTime,c.product_code productCode,
+		 p.name platform_name 
+         from ly_u_finance_recharge c 
+         left join ly_u_member m
+         on c.mem_id = m.id
+         left join ly_u_finance_pay_platform p on p.id=c.platform_id 
+		<where>
+			<if test="recharge.productCode != null">
+				and c.product_code = #{recharge.productCode}
+			</if>
+			<if test="recharge.realName != null">
+				and m.real_name like CONCAT('%',#{recharge.realName},'%' ) 
+			</if>
+			<if test="recharge.IdCard != null">
+				and m.identity_card like CONCAT ('%',#{recharge.IdCard},'%' )  
+			</if>
+			<if test="recharge.platformId != null">
+				and c.platform_id = #{recharge.platformId}
+			</if>
+			<if test="recharge.rechargeStatus != null">
+				and c.recharge_status = #{recharge.rechargeStatus}
+			</if>
+			<if test="startTime!=null">
+				and c.create_time &gt;=#{startTime}
+			</if>
+			<if test="endTime!=null">
+				and c.create_time&lt;=#{endTime}
+			</if>
+		</where>
+		order by c.create_time desc
+		limit #{start}, #{pageSize}
+	</select>
+	
+	<select id="countUserRechargeByProId"  parameterType="FinanceUserRechargeVO" resultType="integer">
+		select count(1) from ly_u_finance_recharge c
+		left join ly_u_member m
+        on c.mem_id = m.id
+		left join ly_u_finance_pay_platform p on p.id=c.platform_id
+		<where>
+			<if test="recharge.productCode != null">
+				and c.product_code = #{recharge.productCode}
+			</if>
+			<if test="recharge.realName != null">
+				and m.real_name like CONCAT('%',#{recharge.realName},'%' ) 
+			</if>
+			<if test="recharge.IdCard != null">
+				and m.identity_card like CONCAT('%',#{recharge.IdCard},'%' )  
+			</if>
+			<if test="recharge.platformId != null">
+				and c.platform_id = #{recharge.platformId}
+			</if>
+			<if test="recharge.rechargeStatus != null">
+				and c.recharge_status = #{recharge.rechargeStatus}
+			</if>
+			<if test="startTime!=null">
+				and c.create_time &gt;=#{startTime}
+			</if>
+			<if test="endTime!=null">
+				and c.create_time&lt;=#{endTime}
+			</if>
+		</where>
+	</select>
+	<select id="rechargeTotal" resultType="java.lang.Double">
+		SELECT sum(recharge_money) FROM  ly_u_finance_recharge c
+		left join ly_u_member m
+		on c.mem_id = m.id
+		left join ly_u_finance_pay_platform p on p.id=c.platform_id
+		<where>
+			<if test="recharge.productCode != null">
+				and c.product_code = #{recharge.productCode}
+			</if>
+			<if test="recharge.realName != null">
+				and m.real_name like CONCAT('%',#{recharge.realName},'%' )
+			</if>
+			<if test="recharge.IdCard != null">
+				and m.identity_card like CONCAT('%',#{recharge.IdCard},'%' )
+			</if>
+			<if test="recharge.platformId != null">
+				and c.platform_id = #{recharge.platformId}
+			</if>
+			<if test="recharge.rechargeStatus != null">
+				and c.recharge_status = #{recharge.rechargeStatus}
+			</if>
+			<if test="startTime!=null">
+				and c.create_time &gt;=#{startTime}
+			</if>
+			<if test="endTime!=null">
+				and c.create_time&lt;=#{endTime}
+			</if>
+		</where>
+	</select>
+    <select id="downloadRechargeFlow" resultType="map">
+		select m.real_name realName ,m.identity_card idCard ,c.recharge_money as rechargeMoney ,c.platform_id platformId,c.recharge_status rechargeStatus,c.id id,c.io_order_id ioOrderId,date_format(c.create_time,'%Y-%m-%d %H:%i:%s')  createTime,date_format(c.success_time,'%Y-%m-%d %H:%i:%s') successTime,c.product_code productCode,
+		p.name platformName
+		from ly_u_finance_recharge c
+		left join ly_u_member m
+		on c.mem_id = m.id
+		left join ly_u_finance_pay_platform p on p.id=c.platform_id
+		<where>
+			<if test="productCode != null">
+				and c.product_code = #{productCode}
+			</if>
+			<if test="realName != null">
+				and m.real_name like CONCAT('%',#{realName},'%' )
+			</if>
+			<if test="idCard != null">
+				and m.identity_card like CONCAT ('%',#{idCard},'%' )
+			</if>
+			<if test="platformId != null">
+				and c.platform_id = #{recharge.platformId}
+			</if>
+			<if test="rechargeStatus != null">
+				and c.recharge_status = #{rechargeStatus}
+			</if>
+			<if test="startTime!=null">
+				and c.create_time &gt;=#{startTime}
+			</if>
+			<if test="endTime!=null">
+				and c.create_time&lt;=#{endTime}
+			</if>
+		</where>
+		order by c.create_time desc
+		limit #{page}, #{pageSize}
+
+	</select>
+
+
+</mapper>

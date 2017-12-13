@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.help.dao.HelpPhotoDao">
+
+	<insert id="insertHelpPhotoModel" parameterType="HelpPhotoModel" useGeneratedKeys="true" keyProperty="id">
+
+     INSERT into ly_h_help_photo (target_code, target_type, photo_type, path, photo_name,create_time)
+     VALUES (#{targetCode},#{targetType},#{photoType},#{path},#{photoName},now())
+	</insert>
+
+    <delete id="deleteByApplyCodeAndType">
+        DELETE FROM  ly_h_help_photo where target_code=#{targetCode} and target_type=#{targetType} and photo_type=#{photoType}
+    </delete>
+
+    <delete id="deleteHelpPhoto">
+        DELETE FROM  ly_h_help_photo where id=#{id} and target_code=#{targetCode} and target_type=#{targetType} and photo_type=#{photoType}
+    </delete>
+
+    <select id="queryHelpPhotoByCode" resultType="HelpPhotoModel">
+        select id, target_code, photo_type, path, photo_name  from ly_h_help_photo WHERE  target_code=#{targetCode} and target_type=#{targetType}
+    </select>
+
+    <update id="updateHelpPhotoModel">
+        update ly_h_help_photo SET
+        photo_name = #{photoName},
+        path =#{path}
+        WHERE
+        id=#{id} and target_code=#{targetCode} and target_type=#{targetType}
+    </update>
+
+    <select id="queryCountByTypeAndCode" resultType="integer">
+       SELECT count(0) from ly_h_help_photo where target_code=#{targetCode} and target_type=#{targetType} AND photo_type=#{photoType}
+    </select>
+
+</mapper>

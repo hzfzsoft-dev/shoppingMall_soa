@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.finance.dao.FinancePlatformBankDao">
+	
+	<select id="queryPlatformBankByPage" resultType="map">
+		select pb.id as id, pb.pay_platform as payPlatform, pb.bank_name as bankPlatformName, pb.bank_code as bankPlatformCode,pb.bank_id as bankId, pb.create_time as createTime
+		 ,pb.update_time as updateTime, pb.status, p.name as platformName, b.name as bankName
+		  from ly_u_finance_pay_platform_bank pb
+		  left join ly_u_finance_bank b on pb.bank_id = b.id
+		  left join ly_u_finance_pay_platform p on pb.pay_platform = p.platform
+		<where>
+			<if test="payPlatform != null">
+				and pb.pay_platform = #{payPlatform}
+			</if>
+			<if test="bankName != null">
+				and pb.bank_name = #{bankName}
+			</if>
+			<if test="bankCode != null">
+				and pb.bank_code = #{bankCode}
+			</if>
+			<if test="bankId != null">
+				and pb.bank_id = #{bankId}
+			</if>
+			<if test="status != null">
+				and pb.status = #{status}
+			</if>
+		</where>
+		order by pb.create_time desc
+		limit #{limit}, #{pageSize}
+	</select>
+	
+	<select id="quertPlatformBankCount" resultType="Integer">
+		select count(1)
+		  from ly_u_finance_pay_platform_bank pb
+		  left join ly_u_finance_bank b on pb.bank_id = b.id
+		  left join ly_u_finance_pay_platform p on pb.pay_platform = p.platform
+		<where>
+			<if test="payPlatform != null">
+				and pb.pay_platform = #{payPlatform}
+			</if>
+			<if test="bankName != null">
+				and pb.bank_name = #{bankName}
+			</if>
+			<if test="bankCode != null">
+				and pb.bank_code = #{bankCode}
+			</if>
+			<if test="bankId != null">
+				and pb.bank_id = #{bankId}
+			</if>
+			<if test="status != null">
+				and pb.status = #{status}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="savePlatformBank" parameterType="financePlatformBankModel" useGeneratedKeys="true"
+		keyProperty="id">
+		insert into ly_u_finance_pay_platform_bank(
+			pay_platform, bank_name, bank_code, bank_id,status
+		) values(
+			#{payPlatform}, #{bankName}, #{bankCode}, #{bankId}, 1
+		)
+	</insert>
+	
+	
+	<update id="updatePlatformBank" parameterType="financePlatformBankModel">
+		update ly_u_finance_pay_platform_bank
+		<set>
+			<if test="payPlatform != null">
+				pay_platform = #{payPlatform},
+			</if>
+			<if test="bankName != null">
+				bank_name = #{bankName},
+			</if>
+			<if test="bankCode != null">
+				bank_code = #{bankCode},
+			</if>
+			<if test="bankId != null">
+				bank_id = #{bankId},
+			</if>
+			<if test="status != null">
+				status = #{status}
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<select id="findPlatformBnak" parameterType="financePlatformBankModel" resultType="financePlatformBankModel">
+		select * from ly_u_finance_pay_platform_bank
+		<where>
+			<if test="bankName != null">
+				and bank_name = #{bankName}
+			</if>
+			<if test="bankCode != null">
+				and bank_code = #{bankCode}
+			</if>
+		</where>
+		limit 1
+	</select>
+	
+	<select id="findPlatformBankNotById" parameterType="financePlatformBankModel" resultType="FinancePlatformBankModel">
+		select * from ly_u_finance_pay_platform_bank where id != #{id} and pay_platform = #{payPlatform} and bank_name = #{bankName} and status = #{status}
+	</select>
+	
+	<select id="findBankByName" resultType="FinanceBankModel">
+		select * from ly_u_finance_bank where id = #{bankId} limit 1
+	</select>
+	
+	<select id="getPlatformBank" resultType="FinancePlatformModel">
+		select DISTINCT p.* 
+		from ly_u_finance_pay_platform p 
+		LEFT JOIN ly_u_finance_pay_platform_bank pb on p.platform = pb.pay_platform
+		left join ly_u_finance_bank b on pb.bank_id = b.id
+		<where>
+			<if test="bankId != null">and b.id = #{bankId}</if>
+			and p.payment = 1
+			AND p.status = 1
+		</where>
+	</select>
+	
+	<select id="getBank" resultType="FinanceBankModel">
+		select * from ly_u_finance_bank where status = 1
+	</select>
+</mapper>

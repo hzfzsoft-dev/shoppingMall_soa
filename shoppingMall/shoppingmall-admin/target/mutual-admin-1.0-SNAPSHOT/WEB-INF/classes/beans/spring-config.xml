@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/data/mongo
+      http://www.springframework.org/schema/data/mongo/spring-mongo.xsd ">
+
+    <import resource="classpath*:/beans/beans-*.xml" />
+       
+    <context:component-scan base-package="org.songbai.mutual.**.impl" />
+    <bean id="springProperties" class="org.songbai.mutual.utils.prop.SpringProperties">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="locations">
+            <list>
+                <value>classpath*:/config/dev/system.properties</value>
+                <value>classpath*:/config/dev/app.properties</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <!-- 分布式锁 -->
+    <bean id="distributeLockFactory" class="org.songbai.mutual.utils.distributelock.DistributeLockFactory"
+          lazy-init="true">
+        <property name="curatorFramework" ref="curatorClient"></property>
+    </bean>
+    <!--  不同的项目中请自行更改base-package的值 ,此处应只加载service，不同的包以英文,隔开 -->
+    
+	 <context:component-scan base-package="org.songbai.mutual.**.impl" />
+
+    <bean class="org.songbai.mutual.utils.mvc.UserUtil"><!-- 分布式session相关 -->
+        <property name="cache" ref="redisTemplate"/>
+    </bean>
+
+  <bean class="org.songbai.mutual.utils.AdminUserUtil" />
+
+
+
+
+</beans>

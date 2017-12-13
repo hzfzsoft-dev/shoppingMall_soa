@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.fzsoft.shoppingmall</groupId>
+    <artifactId>shoppingmall-admin</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring-version>4.2.5.RELEASE</spring-version>
+		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+	</properties>
+
+	<dependencies>
+	
+	   <dependency>
+			<groupId>org.songbai.mutual</groupId>
+			<artifactId>shoppingmall-config</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.songbai.mutual</groupId>
+			<artifactId>shoppingmall-model</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.songbai.mutual</groupId>
+			<artifactId>shoppingmall-util</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+			<scope>provided</scope>
+        </dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring-version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+
+	<!-- 开发环境 -->
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<cfg.dir>dev</cfg.dir>
+				<logger.location>/stock/dream.logs</logger.location>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<configuration>
+								<source>1.8</source>
+								<target>1.8</target>
+							</configuration>
+							<version>3.3</version>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<resources>
+					<resource>
+						<directory>${basedir}/src/main/resources</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/java</directory>
+						<includes>
+							<include>**/*.properties</include>
+							<include>**/*.xml</include>
+						</includes>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<!-- 测试环境 -->
+		<profile>
+			<id>test</id>
+			<properties>
+				<cfg.dir>test</cfg.dir>
+				<logger.location>/stock/dream.logs</logger.location>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<configuration>
+								<source>1.8</source>
+								<target>1.8</target>
+								<compilerId>eclipse</compilerId>
+								<compilerArguments>
+									<verbose />
+									<bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>
+								</compilerArguments>
+							</configuration>
+							<dependencies>
+								<dependency>
+									<groupId>org.codehaus.plexus</groupId>
+									<artifactId>plexus-compiler-eclipse</artifactId>
+									<version>2.5</version>
+								</dependency>
+							</dependencies>
+							<version>3.3</version>
+						</plugin>
+						 <plugin>  
+                <groupId>org.apache.tomcat.maven</groupId>  
+                <artifactId>tomcat9-maven-plugin</artifactId>  
+                <version>2.2</version>  
+                <configuration>  
+                    <port>8095</port>  
+                    <path>/Shebao</path>  
+                    <warSourceDirectory>${basedir}/WebRoot</warSourceDirectory>  
+                    <contextReloadable>false</contextReloadable>  
+                    <uriEncoding>UTF-8</uriEncoding>  
+                </configuration>  
+            </plugin>  
+					</plugins>
+				</pluginManagement>
+				<resources>
+					<resource>
+						<directory>${basedir}/src/main/resources</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/java</directory>
+						<includes>
+							<include>**/*.properties</include>
+							<include>**/*.xml</include>
+						</includes>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>online</id>
+			<properties>
+				<cfg.dir>online</cfg.dir>
+				<logger.location>/stock/dream.logs</logger.location>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<configuration>
+								<source>1.8</source>
+								<target>1.8</target>
+								<compilerId>eclipse</compilerId>
+								<compilerArguments>
+									<verbose />
+									<bootclasspath>${java.home}/lib/rt.jar;${java.home}/lib/jce.jar</bootclasspath>
+								</compilerArguments>
+							</configuration>
+							<dependencies>
+								<dependency>
+									<groupId>org.codehaus.plexus</groupId>
+									<artifactId>plexus-compiler-eclipse</artifactId>
+									<version>2.5</version>
+								</dependency>
+							</dependencies>
+							<version>3.3</version>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<resources>
+					<resource>
+						<directory>${basedir}/src/main/resources</directory>
+						<filtering>true</filtering>
+					</resource>
+					<resource>
+						<directory>src/main/java</directory>
+						<includes>
+							<include>**/*.properties</include>
+							<include>**/*.xml</include>
+						</includes>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	</profiles>
+
+
+	<repositories>
+		<repository>
+			<id>nexus</id>
+			<name>Team Nexus Repository</name>
+			<url>http://dev.esongbai.xyz/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>nexus</id>
+			<name>Team Nexus Repository</name>
+			<url>http://dev.esongbai.xyz/nexus/content/groups/public/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<distributionManagement>
+		<repository>
+			<id>user-release</id>
+			<url>http://dev.esongbai.xyz/nexus/content/repositories/releases/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</repository>
+		<snapshotRepository>
+			<id>user-snapshot</id>
+			<url>http://dev.esongbai.xyz/nexus/content/repositories/snapshots/</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+
+</project>

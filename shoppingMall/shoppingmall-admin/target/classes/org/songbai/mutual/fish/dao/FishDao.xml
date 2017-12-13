@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.fish.dao.FishDao">
+	
+	<select id="queryFishList" resultType="org.songbai.mutual.vo.fish.FishVO">
+	   select * from ly_f_fish order by create_time desc limit #{limit},#{pageSize}
+	</select>
+	
+	<select id="queryFishListCount" resultType="Integer">
+	   select count(0) from ly_f_fish 
+	</select>
+	
+	<select id="queryFishVOById" resultType="org.songbai.mutual.vo.fish.FishVO">
+	   select * from ly_f_fish where id=#{id}
+	</select>
+	<select id="queryFishById" resultType="FishModel">
+	   select * from ly_f_fish where id=#{id}
+	</select>
+	
+	
+	<insert id="addFish" parameterType="FishModel" useGeneratedKeys="true" keyProperty="id">
+	   insert into ly_f_fish (fish_code,fish_name,fish_type,init_foods,foods,day_max_foods,status,create_time,modify_time) values (#{fishCode},#{fishName},#{fishType},#{initFoods},#{foods},#{dayMaxFoods},#{status},now(),now())
+	</insert>
+	
+	<update id="updateFish" parameterType="FishModel">
+	   update  ly_f_fish set fish_name=#{fishName},fish_type=#{fishType}, init_foods= #{initFoods},foods=#{foods}, day_max_foods=#{dayMaxFoods},status=#{status},modify_time=now() where id=#{id}
+	</update>
+	
+	<delete id="deteleFishByCodes">
+	   delete from ly_f_fish where fish_code in
+	    <foreach collection="fishCodes" item="fishCode" index="index" open="(" separator="," close=")">
+					#{fishCode}
+		</foreach>
+	</delete>
+	
+	<select id="queryFishByCode" resultType="FishModel">
+	   select * from ly_f_fish where fish_code=#{fishCode}
+	</select>
+	
+	<select id="loadShowFishByTypeAndStatus" resultType="FishModel">
+	   select * from ly_f_fish where fish_type=#{fishType} and status=1 limit 1 
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.songbai.mutual.finance.dao.CurrencyFlowDao">
+	
+	<select id="queryCurrencyFlow" resultType="Map">
+		select 
+			f.id as id, u.id as userId, u.user_name as userName, f.money as money, f.flow_type as flowType, f.currency_type as currencyType, f.remark as remark, f.create_time as createTime,
+			f.money_left as moneyLeft, f.type_detail as typeDetail 
+		from dream_u_currency_flow f left join dream_u_user u on f.user_id = u.id
+		<where>
+			<if test="userId != null">and f.user_id = #{userId}</if>
+			<if test="userName != null">and u.user_name like concat("%", #{userName}, "%") </if>
+			<if test="userPhone != null">and u.user_phone like concat("%", #{userPhone}, "%") </if>
+			<if test="typeDetail != null">and f.type_detail= #{typeDetail}</if>
+			<if test="currencyType != null">and f.currency_type = #{currencyType}</if>
+			<if test="startTime != null">and f.create_time &gt;= #{startTime}</if>
+			<if test="endTime != null">and f.create_time &lt;= #{endTime}</if>
+		</where>
+		order by f.create_time desc,type_detail
+		limit #{page}, #{pageSize}
+	</select>
+	
+	
+	<select id="queryCurrencyFlowCount" resultType="java.lang.Integer">
+		select count(1) from dream_u_currency_flow f left join dream_u_user u on f.user_id = u.id
+		<where>
+			<if test="userId != null">and f.user_id = #{userId}</if>
+			<if test="userName != null">and u.user_name like concat("%", #{userName}, "%") </if>
+			<if test="userPhone != null">and u.user_phone like concat("%", #{userPhone}, "%") </if>
+			<if test="typeDetail != null">and f.type_detail= #{typeDetail}</if>
+			<if test="currencyType != null">and f.currency_type = #{currencyType}</if>
+			<if test="startTime != null">and f.create_time &gt;= #{startTime}</if>
+			<if test="endTime != null">and f.create_time &lt;= #{endTime}</if>
+		</where>
+	</select>
+	
+	<select id="downloadFlow" resultType="map">
+		select 
+			f.id as id, u.id as userId, u.user_name as userName, f.money as money, u.user_phone as userPhone,
+			f.flow_type as flowType, f.currency_type as currencyType, 
+			f.remark as remark, date_format(f.create_time, '%Y-%m-%d %H:%i:%s') as createTime
+		from dream_u_currency_flow f left join dream_u_user u on f.user_id = u.id
+		<where>
+			<if test="userId != null">and f.user_id = #{userId}</if>
+			<if test="userName != null">and u.userName like concat("%", #{userName}, "%") </if>
+			<if test="userPhone != null">and u.user_phone like concat("%", #{userPhone}, "%") </if>
+			<if test="typeDetail != null">and f.type_detail= #{typeDetail}</if>
+			<if test="currencyType != null">and f.currency_type = #{currencyType}</if>
+			<if test="startTime != null">and f.create_time &gt;= #{startTime}</if>
+			<if test="endTime != null">and f.create_time &lt;= #{endTime}</if>
+		</where>
+		order by f.create_time desc
+	</select>
+	
+	<select id="getMoney" resultType="java.lang.Double">
+		select sum(money) from dream_u_currency_flow 
+		<where>
+			<if test="userId != null">and user_id = #{userId}</if>
+			<if test="userName != null">and userName like concat("%", #{userName}, "%") </if>
+			<if test="userPhone != null">and user_phone like concat("%", #{userPhone}, "%") </if>
+			<if test="typeDetail != null">and type_detail= #{typeDetail}</if>
+			<if test="currencyType != null">and currency_type = #{currencyType}</if>
+			<if test="startTime != null">and create_time &gt;= #{startTime}</if>
+			<if test="endTime != null">and create_time &lt;= #{endTime}</if>
+		</where>
+	</select>
+	
+	<insert id="save" parameterType="UserCurrencyFlowModel">
+		INSERT INTO
+		dream_u_currency_flow
+		(user_id,currency_type,flow_type,type_detail,remark,money,money_left,c_order_id)
+		VALUES
+		(#{userId},#{currencyType},#{flowType},#{typeDetail},#{remark},#{money},#{moneyLeft},#{cOrderId})
+	</insert>
+	
+	<select id="getType" resultType="map">
+		select distinct flow_type as flowType, remark,type_detail as typeDetail from dream_u_currency_flow where currency_type = #{currencyType}
+	</select>
+	
+</mapper>
